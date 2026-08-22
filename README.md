@@ -7,11 +7,11 @@ Independent payment-fee utility website centered on a PayPal Fee Calculator.
 - Next.js, TypeScript, React, Tailwind
 - Provider-neutral fee rule architecture
 - Decimal-safe PayPal calculator, reverse calculator, and international fee breakdown
-- Source-tracked PayPal fee data
+- Source-tracked PayPal US fee data
 - SEO routes, canonical metadata, JSON-LD, sitemap, robots
-- AdSense and analytics integrations
+- AdSense placeholders and analytics event hooks
 - Tests and content audit
 
 ## Fee data
 
-PayPal rates are stored in `lib/fees/paypal-rules.ts`, separate from the calculation engine. The implemented calculator uses verified PayPal merchant fee information and warns instead of estimating unsupported markets.
+PayPal rates are stored in `lib/fees/paypal-rules.ts`, separate from the calculation engine. The implemented calculator uses verified US PayPal merchant fee information and warns instead of estimating unsupported markets.
