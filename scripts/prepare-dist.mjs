@@ -11,8 +11,11 @@ if (!existsSync(outDir)) {
 
 rmSync(distDir, { recursive: true, force: true });
 cpSync(outDir, distDir, { recursive: true });
-mkdirSync(resolve(distDir, ".openai"), { recursive: true });
-cpSync(resolve(root, ".openai", "hosting.json"), resolve(distDir, ".openai", "hosting.json"));
+const hostingMetadata = resolve(root, ".openai", "hosting.json");
+if (existsSync(hostingMetadata)) {
+  mkdirSync(resolve(distDir, ".openai"), { recursive: true });
+  cpSync(hostingMetadata, resolve(distDir, ".openai", "hosting.json"));
+}
 mkdirSync(resolve(distDir, "server"), { recursive: true });
 
 const contentTypes = {
