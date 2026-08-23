@@ -242,24 +242,27 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
             </div>
           )}
           {advanced && (
-            <div className="grid gap-3 rounded bg-paper p-4 text-sm sm:grid-cols-3">
-              <Select label="Receiving currency" value={receivingCurrency} onChange={(value) => setReceivingCurrency(value as CurrencyCode)} options={currencies.map((c) => [c, c])} />
-              <label className="flex items-start gap-2 pt-6">
+            <fieldset className="grid gap-3 rounded bg-paper p-4 text-sm sm:grid-cols-2">
+              <legend className="sr-only">Optional fee assumptions</legend>
+              <div className="sm:col-span-2">
+                <Select label="Receiving currency" value={receivingCurrency} onChange={(value) => setReceivingCurrency(value as CurrencyCode)} options={currencies.map((c) => [c, c])} />
+              </div>
+              <label className="flex items-start gap-2 rounded border border-line bg-white p-3">
                 <input className="mt-1" type="checkbox" checked={forceInternational} onChange={(event) => setForceInternational(event.target.checked)} />
                 <span className="grid gap-1">
                   <span>Apply international fee override</span>
-                  <span className="text-xs font-normal text-muted">Countries that differ already trigger the international fee automatically. Use this only when the payment is cross-border but both country selections match.</span>
+                  <span className="text-xs font-normal leading-5 text-muted">Auto-applies when countries differ. Use this for a cross-border payment when both selections match.</span>
                 </span>
               </label>
-              <label className="flex items-start gap-2 pt-6">
+              <label className="flex items-start gap-2 rounded border border-line bg-white p-3">
                 <input className="mt-1" type="checkbox" checked={currencyConversion} onChange={(event) => setCurrencyConversion(event.target.checked)} />
                 <span className="grid gap-1">
                   <span>Include estimated conversion spread</span>
-                  <span className="text-xs font-normal text-muted">Different payment and receiving currencies already trigger conversion automatically. This is an estimate, not PayPal's final exchange-rate quote.</span>
+                  <span className="text-xs font-normal leading-5 text-muted">Auto-applies when currencies differ. Adds an estimate, not PayPal's final exchange rate.</span>
                 </span>
               </label>
-              <p className="text-xs leading-5 text-muted sm:col-span-3">These options adjust the estimate only. Confirm the final fee and exchange rate inside PayPal before relying on the result.</p>
-            </div>
+              <p className="border-t border-line pt-3 text-xs leading-5 text-muted sm:col-span-2">These options adjust the estimate only. Confirm the final fee and exchange rate inside PayPal before relying on the result.</p>
+            </fieldset>
           )}
         </div>
       </div>
