@@ -59,7 +59,9 @@ function calculateForRequestedAmount(input: FeeInput, requestedAmount: Decimal, 
     };
   }
 
-  const hasCurrencyConversion = input.currencyConversion || input.paymentCurrency !== input.receivingCurrency;
+  // A conversion spread only applies when the payment and receiving currencies differ.
+  // A cross-border payment in the same currency still has international fees, but no FX spread.
+  const hasCurrencyConversion = input.paymentCurrency !== input.receivingCurrency;
   const exchangeRate = hasCurrencyConversion ? money(input.exchangeRate ?? "0") : money(1);
   const missingExchangeRate = hasCurrencyConversion && !exchangeRate.gt(0);
 
@@ -180,7 +182,7 @@ export function calculateFees(input: FeeInput): FeeResult {
 
 export function reverseCalculate(input: FeeInput): FeeResult {
   const target = money(input.amount);
-  const exchangeRate = input.paymentCurrency !== input.receivingCurrency || input.currencyConversion ? money(input.exchangeRate ?? "0") : money(1);
+  const exchangeRate = input.paymentCurrency !== input.receivingCurrency ? money(input.exchangeRate ?? "0") : money(1);
   if (!exchangeRate.gt(0)) return calculateForRequestedAmount({ ...input, mode: "receiving" }, target);
 
   const startingAmount = exchangeRate.gt(0) ? target.div(exchangeRate) : target;
@@ -198,3 +200,4 @@ export function reverseCalculate(input: FeeInput): FeeResult {
   const requested = roundMoney(high, input.paymentCurrency);
   return calculateForRequestedAmount({ ...input, mode: "receiving" }, requested, true);
 }
+
