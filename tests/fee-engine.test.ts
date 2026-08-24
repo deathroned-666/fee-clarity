@@ -63,6 +63,48 @@ describe("PayPal fee engine", () => {
     expect(result.effectiveRate).toBe("8.40");
   });
 
+  it("does not add a currency-conversion spread when currencies match", () => {
+    const result = calculateFees({
+      ...baseInput,
+      amount: "2100",
+      accountCountry: "PH",
+      otherCountry: "US",
+      transactionType: "goods_services",
+      paymentCurrency: "PHP",
+      receivingCurrency: "PHP",
+      currencyConversion: true,
+      exchangeRate: "1",
+    });
+
+    expect(result.hasCurrencyConversion).toBe(false);
+    expect(result.feeLines.find((line) => line.label === "Estimated currency conversion cost")?.amount).toBe("0.00");
+    expect(result.totalFees).toBe("128.19");
+    expect(result.netReceived).toBe("1971.81");
+  });
+
+  it.each([
+    ["USD", "PHP", "56"],
+    ["PHP", "USD", "0.0178571429"],
+    ["EUR", "PHP", "60"],
+    ["GBP", "INR", "110"],
+    ["USD", "JPY", "150"],
+    ["CAD", "AUD", "1.05"],
+    ["TWD", "USD", "0.031"],
+  ])("uses the supplied rate in the correct direction for %s to %s", (paymentCurrency, receivingCurrency, exchangeRate) => {
+    const result = calculateFees({
+      ...baseInput,
+      accountCountry: "PH",
+      otherCountry: "US",
+      paymentCurrency: paymentCurrency as "USD",
+      receivingCurrency: receivingCurrency as "USD",
+      exchangeRate,
+    });
+
+    expect(result.needsExchangeRate).toBeUndefined();
+    expect(Number(result.netReceived)).toBeGreaterThan(0);
+    expect(result.assumptions).toContain(`Exchange rate used: ${exchangeRate} ${receivingCurrency} per 1 ${paymentCurrency}`);
+  });
+
   it("requires an exchange rate before calculating cross-currency receiving amounts", () => {
     const result = calculateFees({
       ...baseInput,
@@ -178,3 +220,4 @@ describe("PayPal fee engine", () => {
     expect(result.warnings[0]).toContain("domestic PayPal receiving rate");
   });
 });
+
