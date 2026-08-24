@@ -62,6 +62,7 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
   useEffect(() => {
     setExchangeRate("");
     setExchangeRateManuallyEdited(false);
+    if (paymentCurrency === receivingCurrency) setCurrencyConversion(false);
   }, [paymentCurrency, receivingCurrency]);
 
   useEffect(() => {
@@ -199,7 +200,7 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
             <Select label="Sender's country" helper="Country of the sender's PayPal account." value={otherCountry} onChange={(value) => setOtherCountry(value as CountryCode)} options={countries.map((c) => [c.code, c.label])} />
             <Select label="Recipient's country" helper="Country of the recipient's PayPal account." value={accountCountry} onChange={(value) => setAccountCountry(value as CountryCode)} options={countries.map((c) => [c.code, c.label])} />
             <Select label="Transaction type" value={transactionType} onChange={(value) => setTransactionType(value as TransactionType)} options={transactionTypes.map((t) => [t.value, t.label])} />
-            <Select label="Payment currency" value={paymentCurrency} onChange={(value) => setPaymentCurrency(value as CurrencyCode)} options={currencies.map((c) => [c, c])} />
+            <Select label="Payment currency" helper="Currency the payment amount is entered in; sender country does not set the currency." value={paymentCurrency} onChange={(value) => setPaymentCurrency(value as CurrencyCode)} options={currencies.map((c) => [c, c])} />
           </div>
           <button type="button" onClick={() => setAdvanced(!advanced)} className="w-fit rounded border border-line px-3 py-2 text-sm font-medium">
             Advanced options
@@ -255,10 +256,10 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
                 </span>
               </label>
               <label className="flex items-start gap-2 rounded border border-line bg-white p-3">
-                <input className="mt-1" type="checkbox" checked={currencyConversion} onChange={(event) => setCurrencyConversion(event.target.checked)} />
+                <input className="mt-1" type="checkbox" checked={currencyConversion} disabled={paymentCurrency === receivingCurrency} onChange={(event) => setCurrencyConversion(event.target.checked)} />
                 <span className="grid gap-1">
                   <span>Include estimated conversion spread</span>
-                  <span className="text-xs font-normal leading-5 text-muted">Auto-applies when currencies differ. Adds an estimate, not PayPal's final exchange rate.</span>
+                  <span className="text-xs font-normal leading-5 text-muted">{paymentCurrency === receivingCurrency ? "Unavailable because payment and receiving currencies match." : "Auto-applies when currencies differ. Adds an estimate, not PayPal's final exchange rate."}</span>
                 </span>
               </label>
               <p className="border-t border-line pt-3 text-xs leading-5 text-muted sm:col-span-2">These options adjust the estimate only. Confirm the final fee and exchange rate inside PayPal before relying on the result.</p>
@@ -291,3 +292,4 @@ function Select({ label, helper, value, onChange, options }: { label: string; he
     </label>
   );
 }
+
