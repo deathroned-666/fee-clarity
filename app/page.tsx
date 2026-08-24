@@ -204,16 +204,17 @@ function HomeSupportContent() {
   return (
     <main className="bg-white">
       <section className="bg-paper">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:py-20 lg:grid-cols-[minmax(0,760px)_minmax(220px,1fr)]">
-          <div className="grid gap-8">
-            <div className="max-w-[760px]">
-              <p className="text-sm font-semibold uppercase tracking-wide text-mint">Understand your result</p>
-              <h2 className="mt-2 text-3xl font-bold leading-tight text-ink md:text-[32px]">How the PayPal Fee Calculator Works</h2>
-              <p className="mt-5 text-base leading-7 text-muted">
-                FeeClarity separates processing fees, fixed fees, international charges, and estimated currency conversion costs so you can see exactly how a payment is calculated.
-              </p>
-            </div>
+        <div className="mx-auto max-w-6xl px-4 py-14 md:py-20">
+          <div className="max-w-[760px]">
+            <p className="text-sm font-semibold uppercase tracking-wide text-mint">Understand your result</p>
+            <h2 className="mt-2 text-3xl font-bold leading-tight text-ink md:text-[32px]">How the PayPal Fee Calculator Works</h2>
+            <p className="mt-5 text-base leading-7 text-muted">
+              FeeClarity separates processing fees, fixed fees, international charges, and estimated currency conversion costs so you can see exactly how a payment is calculated.
+            </p>
+          </div>
 
+          <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,760px)_minmax(220px,1fr)]">
+            <div>
             <div className="grid gap-4 rounded border border-line bg-white p-5 md:p-6">
               <h3 className="text-xl font-semibold text-ink">How to use the calculator</h3>
               <div className="grid gap-3 md:grid-cols-3">
@@ -243,15 +244,16 @@ function HomeSupportContent() {
                 View calculation methodology <ArrowRight size={15} aria-hidden="true" />
               </Link>
             </div>
-          </div>
+            </div>
 
-          <aside className="h-fit rounded border border-line bg-white p-5 text-sm leading-6 text-muted lg:sticky lg:top-20">
+            <aside className="h-fit rounded border border-line bg-white p-5 text-sm leading-6 text-muted lg:sticky lg:top-20">
             <p className="font-semibold text-ink">Transparency first</p>
             <p className="mt-2">FeeClarity uses source-linked rates and blocks unsupported estimates instead of borrowing another market's pricing.</p>
             <Link href="/rate-log/" className="mt-3 inline-flex items-center gap-1 font-semibold text-mint">
               View rate log <ArrowRight size={15} aria-hidden="true" />
             </Link>
-          </aside>
+            </aside>
+          </div>
         </div>
       </section>
 
@@ -450,3 +452,4 @@ function HomeSupportContent() {
     </main>
   );
 }
+
