@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PrimaryNav } from "@/components/PrimaryNav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -72,20 +73,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body>
         <header className="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+          <div className="mx-auto flex max-w-6xl flex-col items-start gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <Link href="/" className="flex items-center gap-2 no-underline" aria-label="FeeClarity home">
               <span className="grid size-9 place-items-center">
                 <img src="/feeclarity-mark.png" alt="" className="size-full object-contain" />
               </span>
               <span className="font-semibold tracking-normal">FeeClarity</span>
             </Link>
-            <nav aria-label="Primary navigation" className="hidden items-center gap-1 text-sm text-muted md:flex">
-              {nav.map(([label, href]) => (
-                <Link key={href} href={href} className="rounded-md border border-transparent px-3 py-2 transition duration-150 hover:border-line hover:bg-white hover:text-ink hover:shadow-sm focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky">
-                  {label}
-                </Link>
-              ))}
-            </nav>
+            <PrimaryNav items={nav} />
           </div>
         </header>
         {children}
@@ -136,3 +131,4 @@ function FooterNav({ title, label, links }: { title: string; label: string; link
     </nav>
   );
 }
+
