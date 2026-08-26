@@ -12,14 +12,14 @@ export function PageHero({ title, description, calculatorMode }: { title: string
   return (
     <main>
       <section className="border-b border-line bg-paper">
-        <div className="mx-auto grid max-w-6xl gap-7 px-4 py-8 md:gap-8 md:py-12">
+        <div className="mx-auto grid max-w-6xl gap-7 px-4 py-10 md:gap-8 md:py-14">
           <div className="max-w-[780px]">
             <p className="text-sm font-semibold uppercase tracking-wide text-mint">Independent - verified against official rates</p>
             <h1 className="mt-2 text-4xl font-bold leading-tight md:text-5xl">{title}</h1>
             <p className="mt-4 max-w-[720px] text-lg leading-8 text-muted md:text-xl md:leading-8">{description}</p>
             <HeroTrustRow ariaLabel="Calculator trust signals" />
           </div>
-          <Calculator defaultMode={calculatorMode ?? "receiving"} />
+            <Calculator defaultMode={calculatorMode ?? "receiving"} />
         </div>
       </section>
     </main>
@@ -120,3 +120,4 @@ export function ExamplesTable() {
 function formatExampleCurrency(value: string) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(value));
 }
+
