@@ -161,12 +161,12 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
 
   return (
     <section className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]" aria-label="PayPal fee calculator">
-      <div className="rounded border border-line bg-white p-4 shadow-soft md:p-6">
+      <div className="rounded-xl border border-line bg-white p-4 shadow-soft md:p-6">
         <div className="grid gap-4">
           <label className="grid gap-2 text-sm font-medium">
             Amount
             <input
-              className="h-12 rounded border border-line px-3 text-lg"
+              className="h-12 rounded-lg border border-line px-3 text-lg transition focus:border-sky focus:ring-2 focus:ring-sky/15"
               inputMode="decimal"
               min="0"
               value={amount}
@@ -189,7 +189,7 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
                   type="button"
                   key={value}
                   onClick={() => setMode(value as CalculatorMode)}
-                  className={`rounded border px-3 py-2 text-sm ${mode === value ? "border-mint bg-mint text-white" : "border-line bg-paper text-ink"}`}
+                  className={`rounded-lg border px-3 py-2 text-sm transition duration-150 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky ${mode === value ? "border-mint bg-mint text-white shadow-sm" : "border-line bg-paper text-ink hover:border-mint"}`}
                 >
                   {label}
                 </button>
@@ -210,7 +210,7 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
               <label className="grid gap-2 font-medium">
                 Estimated exchange rate
                 <input
-                  className="h-11 rounded border border-line bg-white px-3"
+                  className="h-11 rounded-lg border border-line bg-white px-3 transition focus:border-sky focus:ring-2 focus:ring-sky/15"
                   inputMode="decimal"
                   placeholder={`1 ${paymentCurrency} = ? ${receivingCurrency}`}
                   value={exchangeRate}
@@ -232,7 +232,7 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
                     setExchangeRateRefreshKey((value) => value + 1);
                     trackEvent("calculator_exchange_rate_refresh", { paymentCurrency, receivingCurrency });
                   }}
-                  className="inline-flex items-center gap-1 rounded border border-line bg-white px-2 py-1 text-xs font-medium text-ink"
+                  className="inline-flex items-center gap-1 rounded-lg border border-line bg-white px-2 py-1 text-xs font-medium text-ink transition hover:border-mint hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
                 >
                   <RefreshCcw size={13} /> Use latest rate
                 </button>
@@ -243,19 +243,19 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
             </div>
           )}
           {advanced && (
-            <fieldset className="grid gap-3 rounded bg-paper p-4 text-sm sm:grid-cols-2">
+            <fieldset className="grid gap-3 rounded-xl border border-line bg-paper p-4 text-sm sm:grid-cols-2">
               <legend className="sr-only">Optional fee assumptions</legend>
               <div className="sm:col-span-2">
                 <Select label="Receiving currency" value={receivingCurrency} onChange={(value) => setReceivingCurrency(value as CurrencyCode)} options={currencies.map((c) => [c, c])} />
               </div>
-              <label className="flex items-start gap-2 rounded border border-line bg-white p-3">
+              <label className="flex items-start gap-2 rounded-lg border border-line bg-white p-3 transition hover:border-mint hover:shadow-sm">
                 <input className="mt-1" type="checkbox" checked={forceInternational} onChange={(event) => setForceInternational(event.target.checked)} />
                 <span className="grid gap-1">
                   <span>Apply international fee override</span>
                   <span className="text-xs font-normal leading-5 text-muted">Auto-applies when countries differ. Use this for a cross-border payment when both selections match.</span>
                 </span>
               </label>
-              <label className="flex items-start gap-2 rounded border border-line bg-white p-3">
+              <label className="flex items-start gap-2 rounded-lg border border-line bg-white p-3 transition hover:border-mint hover:shadow-sm">
                 <input className="mt-1" type="checkbox" checked={currencyConversion} disabled={paymentCurrency === receivingCurrency} onChange={(event) => setCurrencyConversion(event.target.checked)} />
                 <span className="grid gap-1">
                   <span>Include estimated conversion spread</span>
@@ -285,7 +285,7 @@ function Select({ label, helper, value, onChange, options }: { label: string; he
   return (
     <label className="grid gap-2 text-sm font-medium">
       {label}
-      <select className="h-11 rounded border border-line bg-white px-3" value={value} onChange={(event) => onChange(event.target.value)}>
+      <select className="h-11 rounded-lg border border-line bg-white px-3 transition focus:border-sky focus:ring-2 focus:ring-sky/15" value={value} onChange={(event) => onChange(event.target.value)}>
         {options.map(([optionValue, optionLabel]) => <option key={optionValue} value={optionValue}>{optionLabel}</option>)}
       </select>
       {helper && <span className="text-xs font-normal text-muted">{helper}</span>}
