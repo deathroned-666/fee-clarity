@@ -215,7 +215,7 @@ function HomeSupportContent() {
 
           <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,760px)_minmax(220px,1fr)]">
             <div>
-            <div className="grid gap-4 rounded border border-line bg-white p-5 md:p-6">
+            <div className="grid gap-4 rounded-xl border border-line bg-white p-5 shadow-soft md:p-6">
               <h3 className="text-xl font-semibold text-ink">How to use the calculator</h3>
               <div className="grid gap-3 md:grid-cols-3">
                 {[
@@ -223,7 +223,7 @@ function HomeSupportContent() {
                   ["2", "Choose the calculation", "Estimate what you receive, or solve backward for an exact target amount."],
                   ["3", "Review the estimate", "Check each fee line, assumption, source, and verification date."],
                 ].map(([number, title, description]) => (
-                  <div key={number} className="rounded border border-line bg-paper p-4">
+                  <div key={number} className="rounded-lg border border-line bg-paper p-4 transition duration-150 hover:-translate-y-0.5 hover:border-mint hover:shadow-sm">
                     <span className="grid size-8 place-items-center rounded-full bg-ink text-sm font-semibold text-white" aria-hidden="true">{number}</span>
                     <h4 className="mt-3 text-sm font-semibold text-ink">{title}</h4>
                     <p className="mt-2 text-sm leading-6 text-muted">{description}</p>
@@ -232,7 +232,7 @@ function HomeSupportContent() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 {["Percentage-based processing fee", "Fixed transaction fee", "International surcharge", "Estimated currency conversion cost"].map((item) => (
-                  <div key={item} className="rounded border border-line bg-white px-4 py-3 text-sm font-medium text-ink">
+                  <div key={item} className="rounded-lg border border-line bg-white px-4 py-3 text-sm font-medium text-ink transition hover:border-mint hover:shadow-sm">
                     {item}
                   </div>
                 ))}
@@ -246,7 +246,7 @@ function HomeSupportContent() {
             </div>
             </div>
 
-            <aside className="h-fit rounded border border-line bg-white p-5 text-sm leading-6 text-muted lg:sticky lg:top-20">
+            <aside className="h-fit rounded-xl border border-line bg-white p-5 text-sm leading-6 text-muted shadow-soft lg:sticky lg:top-20">
             <p className="font-semibold text-ink">Transparency first</p>
             <p className="mt-2">FeeClarity uses source-linked rates and blocks unsupported estimates instead of borrowing another market's pricing.</p>
             <Link href="/rate-log/" className="mt-3 inline-flex items-center gap-1 font-semibold text-mint">
