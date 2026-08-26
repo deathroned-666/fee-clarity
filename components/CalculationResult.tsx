@@ -29,11 +29,11 @@ export function CalculationResult({
   const primaryLabel = mode === "target_receive" ? "You should charge" : "You'll receive";
 
   return (
-    <div className="rounded border border-line bg-ink p-4 text-white shadow-soft md:p-6">
+    <div className="rounded-xl border border-ink bg-ink p-4 text-white shadow-soft md:p-6">
       <p className="text-sm uppercase tracking-wide text-white/70">Estimate</p>
       <div className="mt-3 grid gap-3">
         {result.needsExchangeRate ? (
-          <div className="rounded border border-amber-300/40 bg-amber-300/12 p-3 text-sm leading-6 text-amber-50">
+          <div className="rounded-lg border border-amber-300/40 bg-amber-300/12 p-3 text-sm leading-6 text-amber-50">
             Enter an exchange rate to estimate {receivingCurrency} received from {paymentCurrency}. Cross-currency totals are hidden until a rate is provided.
           </div>
         ) : (
@@ -48,13 +48,13 @@ export function CalculationResult({
         <WhyThisRate result={result} />
         <CalculationAssumptions result={result} />
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={onCopy} className="inline-flex items-center gap-2 rounded bg-white px-3 py-2 text-sm font-medium text-ink">
+          <button type="button" onClick={onCopy} className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm font-medium text-ink transition hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky">
             <Copy size={16} /> {mode === "target_receive" ? "Copy charge amount" : "Copy amount"}
           </button>
-          <button type="button" onClick={onShare} className="inline-flex items-center gap-2 rounded border border-white/25 px-3 py-2 text-sm">
+          <button type="button" onClick={onShare} className="inline-flex items-center gap-2 rounded-lg border border-white/25 px-3 py-2 text-sm transition hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/10 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky">
             <Share2 size={16} /> Share
           </button>
-          <button type="button" onClick={onReset} className="inline-flex items-center gap-2 rounded border border-white/25 px-3 py-2 text-sm">
+          <button type="button" onClick={onReset} className="inline-flex items-center gap-2 rounded-lg border border-white/25 px-3 py-2 text-sm transition hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/10 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky">
             <RefreshCcw size={16} /> Reset
           </button>
         </div>
@@ -71,7 +71,7 @@ export function CalculationResult({
 
 export function FeeBreakdown({ result, currency }: { result: FeeResult; currency: CurrencyCode }) {
   return (
-    <div className="grid gap-2 rounded bg-white/8 p-3" aria-label="Fee breakdown">
+    <div className="grid gap-2 rounded-lg border border-white/10 bg-white/8 p-3" aria-label="Fee breakdown">
       {result.feeLines.map((line) => (
         <div key={line.label} className="flex items-start justify-between gap-4 text-sm">
           <span>
@@ -87,7 +87,7 @@ export function FeeBreakdown({ result, currency }: { result: FeeResult; currency
 
 export function SourceVerification({ result }: { result: FeeResult }) {
   return (
-    <div className="grid gap-2 rounded border border-white/15 bg-white/6 p-3 text-xs leading-5 text-white/75">
+    <div className="grid gap-2 rounded-lg border border-white/15 bg-white/6 p-3 text-xs leading-5 text-white/75">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="inline-flex items-center gap-1 font-medium text-emerald-100"><CheckCircle2 size={14} aria-hidden="true" /> Rates verified {result.source.lastVerified}</span>
         <a className="inline-flex items-center gap-1 underline" href={result.source.url}>Official source <ExternalLink size={13} aria-hidden="true" /></a>
@@ -100,7 +100,7 @@ export function SourceVerification({ result }: { result: FeeResult }) {
 
 export function WhyThisRate({ result }: { result: FeeResult }) {
   return (
-    <details className="rounded border border-white/15 bg-white/6 p-3 text-sm">
+    <details className="rounded-lg border border-white/15 bg-white/6 p-3 text-sm transition open:bg-white/10">
       <summary className="cursor-pointer font-medium text-white">Why this rate?</summary>
       <p className="mt-3 text-white/72">{result.isInternational ? "This transaction is classified as international because the sender and recipient PayPal accounts are registered in different markets, or the international option was selected." : "This transaction is classified as domestic because the sender and recipient PayPal accounts are in the same market and no international override is selected."}</p>
       <p className="mt-2 text-white/72">The selected transaction type and recipient country determine the published PayPal fee schedule used for this estimate.</p>
@@ -110,7 +110,7 @@ export function WhyThisRate({ result }: { result: FeeResult }) {
 
 export function CalculationAssumptions({ result }: { result: FeeResult }) {
   return (
-    <details className="rounded border border-white/15 bg-white/6 p-3 text-sm">
+    <details className="rounded-lg border border-white/15 bg-white/6 p-3 text-sm transition open:bg-white/10">
       <summary className="cursor-pointer font-medium text-white">How this was calculated</summary>
       <div className="mt-3 grid gap-3 text-white/72">
         <p>{result.formula}</p>
@@ -133,3 +133,4 @@ function Metric({ label, value, strong = false, accent = false }: { label: strin
     </div>
   );
 }
+
