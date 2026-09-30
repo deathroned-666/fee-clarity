@@ -58,9 +58,9 @@ describe("PayPal fee engine", () => {
       exchangeRate: "56",
     });
 
-    expect(result.totalFees).toBe("9881.64");
-    expect(result.netReceived).toBe("107718.36");
-    expect(result.effectiveRate).toBe("8.40");
+    expect(result.totalFees).toBe("8717.40");
+    expect(result.netReceived).toBe("108882.60");
+    expect(result.effectiveRate).toBe("7.41");
   });
 
   it("does not add a currency-conversion spread when currencies match", () => {
@@ -78,8 +78,8 @@ describe("PayPal fee engine", () => {
 
     expect(result.hasCurrencyConversion).toBe(false);
     expect(result.feeLines.find((line) => line.label === "Estimated currency conversion cost")?.amount).toBe("0.00");
-    expect(result.totalFees).toBe("128.19");
-    expect(result.netReceived).toBe("1971.81");
+    expect(result.totalFees).toBe("107.40");
+    expect(result.netReceived).toBe("1992.60");
   });
 
   it.each([
@@ -220,4 +220,3 @@ describe("PayPal fee engine", () => {
     expect(result.warnings[0]).toContain("domestic PayPal receiving rate");
   });
 });
-

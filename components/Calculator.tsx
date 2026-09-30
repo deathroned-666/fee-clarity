@@ -39,14 +39,32 @@ function formatExchangeRate(rate: number) {
   return Number(rate.toPrecision(8)).toString();
 }
 
-export function Calculator({ defaultMode = "receiving", compact = false }: { defaultMode?: CalculatorMode; compact?: boolean }) {
+type CalculatorProps = {
+  defaultMode?: CalculatorMode;
+  defaultTransactionType?: TransactionType;
+  defaultAccountCountry?: CountryCode;
+  defaultOtherCountry?: CountryCode;
+  defaultPaymentCurrency?: CurrencyCode;
+  defaultReceivingCurrency?: CurrencyCode;
+  compact?: boolean;
+};
+
+export function Calculator({
+  defaultMode = "receiving",
+  defaultTransactionType = "commercial",
+  defaultAccountCountry = "US",
+  defaultOtherCountry = "US",
+  defaultPaymentCurrency = "USD",
+  defaultReceivingCurrency = "USD",
+  compact = false,
+}: CalculatorProps) {
   const [amount, setAmount] = useState(defaultMode === "target_receive" ? "1000" : "250");
   const [mode, setMode] = useState<CalculatorMode>(defaultMode);
-  const [accountCountry, setAccountCountry] = useState<CountryCode>("US");
-  const [otherCountry, setOtherCountry] = useState<CountryCode>("US");
-  const [transactionType, setTransactionType] = useState<TransactionType>("commercial");
-  const [paymentCurrency, setPaymentCurrency] = useState<CurrencyCode>("USD");
-  const [receivingCurrency, setReceivingCurrency] = useState<CurrencyCode>("USD");
+  const [accountCountry, setAccountCountry] = useState<CountryCode>(defaultAccountCountry);
+  const [otherCountry, setOtherCountry] = useState<CountryCode>(defaultOtherCountry);
+  const [transactionType, setTransactionType] = useState<TransactionType>(defaultTransactionType);
+  const [paymentCurrency, setPaymentCurrency] = useState<CurrencyCode>(defaultPaymentCurrency);
+  const [receivingCurrency, setReceivingCurrency] = useState<CurrencyCode>(defaultReceivingCurrency);
   const [advanced, setAdvanced] = useState(false);
   const [forceInternational, setForceInternational] = useState(false);
   const [currencyConversion, setCurrencyConversion] = useState(false);
@@ -144,13 +162,13 @@ export function Calculator({ defaultMode = "receiving", compact = false }: { def
   }
 
   function reset() {
-    setAmount("250");
-    setMode("receiving");
-    setAccountCountry("US");
-    setOtherCountry("US");
-    setTransactionType("commercial");
-    setPaymentCurrency("USD");
-    setReceivingCurrency("USD");
+    setAmount(defaultMode === "target_receive" ? "1000" : "250");
+    setMode(defaultMode);
+    setAccountCountry(defaultAccountCountry);
+    setOtherCountry(defaultOtherCountry);
+    setTransactionType(defaultTransactionType);
+    setPaymentCurrency(defaultPaymentCurrency);
+    setReceivingCurrency(defaultReceivingCurrency);
     setForceInternational(false);
     setCurrencyConversion(false);
     setExchangeRate("");
@@ -292,4 +310,3 @@ function Select({ label, helper, value, onChange, options }: { label: string; he
     </label>
   );
 }
-

@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   },
   description: "Independent payment-fee calculators and plain-English guides for PayPal fees, international charges, currency conversion, and seller costs.",
   applicationName: "FeeClarity",
+  authors: [{ name: "FeeClarity Editorial Team", url: "https://tryfeeclarity.com/about/" }],
+  creator: "FeeClarity Editorial Team at LaunchLab",
+  publisher: "LaunchLab",
   robots: { index: true, follow: true },
   icons: {
     icon: "/feeclarity-mark.png",
@@ -131,4 +134,3 @@ function FooterNav({ title, label, links }: { title: string; label: string; link
     </nav>
   );
 }
-

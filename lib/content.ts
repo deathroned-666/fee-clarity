@@ -55,6 +55,15 @@ export const contentPages: PageContent[] = [
     sections: [
       { heading: "Invoice payments", body: ["PayPal invoicing lets a customer pay a requested amount through several funding methods. In the US schedule, PayPal and Venmo invoice payments use a published percentage plus fixed fee, while some card-funded invoice payments may use a different rate."] },
       { heading: "Use for pricing work", body: ["Before sending a client invoice, calculate both the estimated fee and the amount to request if you need to receive a specific net amount."] },
+      { heading: "Invoice workflow", body: ["Start with the amount written on the invoice, select Invoice as the transaction type, and match the sender and recipient account countries. Use What I'll receive to estimate the net payment. Switch to What I should charge when the contract specifies the amount you must receive after processing costs."] },
+      { heading: "Realistic example", body: ["A US freelancer invoicing a US client for USD 1,000 can test the domestic invoice rule with matching countries and currencies. An overseas client requires a second run with the client's country selected; if the client pays in another currency, review conversion separately rather than assuming the international surcharge includes it."] },
+      { heading: "Common invoice mistakes", body: ["Do not classify every invoice as an ordinary commercial checkout payment, assume the payer's currency from their country, or add a percentage to the desired net amount without solving backward. Confirm the funding method and the final fee shown by PayPal before issuing a revised invoice."] },
+    ],
+    faq: [
+      { q: "Does this page automatically select the invoice rule?", a: "Yes. The calculator starts with Invoice selected, while all fields remain editable for the real payment route." },
+      { q: "How do I invoice for an exact amount after fees?", a: "Choose What I should charge, enter the target net amount, and verify the recipient country, sender country, and currency before using the result." },
+      { q: "Can the customer's funding method change the fee?", a: "It can. PayPal may distinguish PayPal-funded, Venmo, card-funded, and other invoice payment routes, so confirm the final quote in PayPal." },
+      { q: "Should currency conversion be included automatically?", a: "Only when payment and receiving currencies differ. The conversion estimate is separate from the invoice processing and international fee lines." },
     ],
   },
   {
@@ -64,6 +73,15 @@ export const contentPages: PageContent[] = [
     sections: [
       { heading: "Goods and Services payments", body: ["Goods and Services payments are commercial in nature and can be priced differently from personal payments. Use this page for seller-style receiving estimates where buyer protection and seller terms may apply."] },
       { heading: "Personal payments are different", body: ["FeeClarity does not treat personal payments as a universal substitute for commercial payments. Choose the transaction type that matches the real payment purpose."] },
+      { heading: "How to test a sale", body: ["Enter the gross sale amount before fees, keep Goods & Services selected, and choose the countries where the sender and recipient PayPal accounts are registered. Review the rate explanation and fixed-fee line instead of assuming the headline percentage is the complete cost."] },
+      { heading: "Seller example", body: ["For a USD 250 sale between US accounts, use matching US countries and USD for both currencies. For an overseas buyer, change the sender country and only select a different receiving currency if PayPal will actually convert the payment. Comparing those two runs isolates the international adjustment from conversion cost."] },
+      { heading: "Common classification mistakes", body: ["Do not choose a personal payment merely to produce a smaller estimate when the transaction is a purchase. Also avoid treating buyer protection, disputes, refunds, chargebacks, taxes, shipping, or platform fees as part of this calculator; they require separate review."] },
+    ],
+    faq: [
+      { q: "Does this calculator start with Goods & Services selected?", a: "Yes. The page opens with the Goods & Services transaction type selected and lets you change it if the actual payment product differs." },
+      { q: "Is the Goods & Services fee the same as a personal-payment fee?", a: "No. Commercial and personal payment rules can differ, and personal payments should not be used to misclassify a purchase." },
+      { q: "Does the estimate include disputes, refunds, or chargebacks?", a: "No. It estimates supported processing, fixed, international, and conversion components only." },
+      { q: "Which country controls the published receiving rule?", a: "FeeClarity selects the published schedule from the recipient account's country and uses the sender country to assess international status." },
     ],
   },
   {
@@ -72,7 +90,16 @@ export const contentPages: PageContent[] = [
     description: "Estimate PayPal merchant processing costs for business payments and card-funded transactions.",
     sections: [
       { heading: "Merchant fee planning", body: ["Merchant fees affect margins, pricing, and invoice strategy. This calculator is built for quick estimates and separates each fee line so finance and operations teams can review the assumptions."] },
-      { heading: "Future provider expansion", body: ["The fee engine is provider-agnostic. PayPal is the first implemented provider, and the same structure can support Stripe, Wise, Payoneer, Square, Shopify, Etsy, and eBay calculators later."] },
+      { heading: "Merchant card workflow", body: ["This page starts with Merchant card payment selected. Enter the gross customer charge and match the recipient market, sender market, and currencies to the payment. Use the fee-line output to estimate processing impact before evaluating taxes, platform fees, shipping, refunds, or chargebacks separately."] },
+      { heading: "Margin example", body: ["A merchant evaluating a USD 100 card sale can compare the estimated amount received with product cost and other selling expenses. A second run at USD 1,000 shows how the percentage portion scales while a fixed fee remains constant, which is useful when comparing average order values."] },
+      { heading: "Reconciliation guidance", body: ["Record the transaction type, recipient country, currency, rate source, verification date, and any account-specific pricing used in the estimate. Compare the estimate with an actual PayPal transaction statement before using it for recurring financial forecasts."] },
+      { heading: "Costs outside this result", body: ["FeeClarity does not add sales tax, platform commission, withdrawal cost, dispute fees, refund treatment, chargeback exposure, or custom merchant pricing unless explicitly represented in the result. Those costs should not be hidden inside a single effective-rate claim."] },
+    ],
+    faq: [
+      { q: "Does this page select the merchant card rule?", a: "Yes. Merchant card payment is selected initially, and the transaction type can be changed when the actual PayPal product differs." },
+      { q: "Can I use this estimate for margin planning?", a: "Yes, as one input. Add product, platform, tax, shipping, refund, and chargeback costs separately before making a pricing decision." },
+      { q: "Does FeeClarity know my negotiated merchant rate?", a: "No. The calculator uses implemented published rates and cannot see account-specific or negotiated PayPal pricing." },
+      { q: "Why compare more than one sale amount?", a: "The percentage fee scales with the amount while a fixed fee does not, so the effective cost can differ across order sizes." },
     ],
   },
   {
@@ -93,6 +120,14 @@ export const contentPages: PageContent[] = [
       { heading: "When a PayPal payment becomes international", body: ["FeeClarity treats a payment as international when the sender and recipient PayPal accounts are in different markets, or when the international option is selected. In supported rules, the international amount is shown as its own percentage-based line so it does not get mixed into the domestic processing fee."] },
       { heading: "International fee is not the same as currency conversion", body: ["A cross-border payment can be international even if no currency is converted. Currency conversion is a separate estimate that applies when the payment currency and receiving currency differ, or when PayPal displays a transaction exchange rate."] },
       { heading: "What to verify before relying on the result", body: ["Check the recipient country's PayPal fee schedule, the sender region, the payment type, the fixed fee currency, and whether PayPal or another provider is performing the currency conversion. Unsupported country combinations should be treated as unavailable rather than guessed."] },
+      { heading: "Domestic versus cross-border test", body: ["Run the same amount twice: first with matching sender and recipient countries, then with the real countries involved. Keep the transaction type and currency unchanged. The difference isolates the implemented international adjustment without mixing in a currency conversion estimate."] },
+      { heading: "Common troubleshooting", body: ["If the international line is zero, confirm that the sender and recipient countries differ or that a justified override is enabled. If the result is unavailable, the selected recipient market or payment type may not have a verified rule. Do not substitute another country's rate simply to produce a number."] },
+    ],
+    faq: [
+      { q: "Can a payment be international without currency conversion?", a: "Yes. Sender and recipient accounts can be in different markets while both sides use the same currency." },
+      { q: "Can currency conversion happen on a domestic payment?", a: "Yes. The account countries can match while payment and receiving currencies differ." },
+      { q: "Why is the international fee shown separately?", a: "Separating it makes the estimate auditable and prevents it from being confused with processing or exchange-rate costs." },
+      { q: "What should I do when a route is unsupported?", a: "Check PayPal's current local schedule or transaction quote. FeeClarity does not borrow an unrelated market's pricing." },
     ],
   },
   {
@@ -103,6 +138,14 @@ export const contentPages: PageContent[] = [
       { heading: "The short answer", body: ["PayPal does not charge one universal fee for every transaction. The amount depends on where the recipient account is based, where the sender is based, which payment product is used, and whether the payment includes international or currency conversion costs."] },
       { heading: "Inputs that usually change the fee", body: ["The most important inputs are the gross payment amount, transaction type, sender country, recipient country, payment currency, receiving currency, and whether a currency conversion spread should be estimated. FeeClarity exposes these assumptions so the result can be reviewed."] },
       { heading: "How to get a practical estimate", body: ["Start with the exact payment amount and choose the transaction type that matches the real payment purpose. If you need the recipient to receive a specific net amount, use the reverse calculator instead of simply adding a percentage on top."] },
+      { heading: "Scenario matrix", body: ["A domestic commercial payment usually begins with a percentage and may add a currency-specific fixed fee. A cross-border payment can add an international percentage. A different payment and receiving currency introduces an exchange-rate question. An account with negotiated pricing may not match any public standard-rate estimate."] },
+      { heading: "Questions to answer before calculating", body: ["Identify who receives the payment, where both PayPal accounts are registered, what product or payment type is used, which currency the customer pays, which currency the recipient receives, and whether PayPal performs conversion. If any answer is uncertain, the result should be treated as a planning range rather than a final quote."] },
+    ],
+    faq: [
+      { q: "Is there one universal PayPal percentage?", a: "No. Country, payment product, account terms, international status, fixed fees, and currency conversion can all affect the result." },
+      { q: "Why can two payments of the same amount have different fees?", a: "They may use different transaction types, account countries, currencies, funding methods, or negotiated pricing." },
+      { q: "Does FeeClarity show the final PayPal quote?", a: "No. It provides an independent estimate from implemented published rules and visible assumptions." },
+      { q: "When should I use reverse calculation?", a: "Use it when you know the exact net amount the recipient should receive after the estimated fee." },
     ],
   },
   {
@@ -113,6 +156,15 @@ export const contentPages: PageContent[] = [
       { heading: "Basic PayPal fee formula", body: ["For many commercial payments, the estimate is: transaction amount multiplied by the applicable percentage rate, plus any fixed fee. If the payment is international, an additional percentage may apply. If PayPal converts currency, conversion cost should be reviewed separately."] },
       { heading: "Reverse calculation formula", body: ["When you want to receive an exact amount, solve backward from the desired net amount. For a simple percentage plus fixed-fee transaction, the gross request is approximately: target net plus fixed fee, divided by one minus the total percentage rate."] },
       { heading: "Why FeeClarity uses decimal-safe calculations", body: ["Payment-fee math is sensitive to rounding. FeeClarity keeps fee rules separate from calculation logic and rounds money outputs to normal currency precision so examples are easier to audit."] },
+      { heading: "Worked forward example", body: ["Assume a USD 100 domestic payment with a 3.49% rate and a USD 0.49 fixed fee. The percentage component is USD 3.49, the total estimated fee is USD 3.98, and the estimated amount received is USD 96.02. This example is mathematical only; the applicable rate must still be verified for the actual payment type and market."] },
+      { heading: "Worked reverse example", body: ["Using the same hypothetical 3.49% plus USD 0.49 rule, receiving exactly USD 100 requires solving (100 + 0.49) / (1 - 0.0349), then rounding the gross request to currency precision. Simply adding 3.49% and USD 0.49 to 100 understates the amount because the percentage is charged on the gross request."] },
+      { heading: "Formula mistakes to avoid", body: ["Do not apply the fixed fee as a percentage, subtract an international rate twice, treat a conversion spread as an ordinary processing line, or round every intermediate calculation too early. Preserve sufficient precision until the final money value and compare the result with the provider's displayed quote."] },
+    ],
+    faq: [
+      { q: "What is the basic forward fee formula?", a: "For a simple rule, estimated fee equals gross amount multiplied by the percentage rate, plus the fixed fee." },
+      { q: "Why does reverse calculation divide by one minus the rate?", a: "Because the percentage is charged on the gross amount being solved for, not on the target net amount." },
+      { q: "When should money be rounded?", a: "Keep enough precision during the calculation and round the final currency amounts according to the provider's applicable rules." },
+      { q: "Can I combine international and conversion percentages?", a: "They may both affect cost, but they represent different things and should remain visible as separate assumptions." },
     ],
   },
   {
@@ -123,6 +175,15 @@ export const contentPages: PageContent[] = [
       { heading: "Currency conversion is an exchange-rate question", body: ["When PayPal converts one currency into another, the final transaction exchange rate may differ from a market reference rate. That difference can act like a conversion cost even when it is shown through the exchange rate rather than as a separate line item."] },
       { heading: "How FeeClarity estimates conversion cost", body: ["FeeClarity can load a latest daily market reference rate from Frankfurter when a supported currency pair is available. Users can also enter a manual rate. The calculator does not claim the reference rate is PayPal's exact final transaction rate."] },
       { heading: "Avoid double-counting", body: ["If you enter PayPal's final displayed exchange rate, turn off the separate currency conversion estimate. Otherwise the exchange-rate difference may be counted twice."] },
+      { heading: "Benchmark comparison example", body: ["Suppose a market reference says 1 USD equals 58 PHP while the provider displays 56.26 PHP. Compare the receiving amount at both rates for the same USD amount; the difference is the exchange-rate impact. Do not then add another conversion-spread estimate if the displayed provider rate already contains that difference."] },
+      { heading: "How to test a displayed rate", body: ["Copy the exact payment and receiving currencies, amount, and rate orientation shown by PayPal. Confirm whether the quote means one unit of the payment currency buys the receiving currency or the inverse. A reversed rate is a common cause of implausible converted amounts."] },
+      { heading: "Privacy and accuracy", body: ["The calculator needs only the amount, countries, currencies, and exchange rate. Do not paste account numbers, card data, customer names, transaction IDs, or screenshots containing private financial details. Exchange rates can change before settlement, so record the quote time when comparing providers."] },
+    ],
+    faq: [
+      { q: "Is the reference rate PayPal's rate?", a: "No. It is a neutral market benchmark used to understand the difference from PayPal's displayed transaction rate." },
+      { q: "How do I avoid reversing an exchange rate?", a: "Match the calculator's displayed one-unit direction to the quote. If PayPal shows the inverse pair, convert it before comparing." },
+      { q: "Should I enable a spread after entering PayPal's displayed rate?", a: "Usually not. Doing both can count the same exchange-rate difference twice." },
+      { q: "Why can the final converted amount change?", a: "Provider rates, market rates, quote timing, account terms, and the party performing conversion can change the outcome." },
     ],
   },
   {
@@ -133,6 +194,15 @@ export const contentPages: PageContent[] = [
       { heading: "Why freelancers need reverse fee planning", body: ["Freelancers often quote a net amount for work but receive less after processing fees. The reverse calculator helps estimate the gross amount to request when you need a specific amount after fees."] },
       { heading: "Invoice details that matter", body: ["Before sending an invoice, confirm the client country, your account country, payment currency, receiving currency, and whether the client is paying through a method that uses a different PayPal fee rule."] },
       { heading: "How to explain fees to clients", body: ["Use FeeClarity as an internal pricing tool rather than presenting it as PayPal's final quote. Final fees can vary by account, funding source, currency conversion, and merchant agreement."] },
+      { heading: "Quote-to-invoice workflow", body: ["First decide whether your quoted price is the amount the client pays or the amount you must receive. Use the standard mode for a fixed invoice total and reverse mode for a fixed net target. Save the selected countries, currencies, transaction type, and source date with the project estimate so a later difference can be explained."] },
+      { heading: "Realistic freelance scenario", body: ["A designer who needs to receive USD 1,000 from a domestic client should start with reverse mode and Invoice selected. For an overseas client paying in another currency, the designer should run a separate scenario for the cross-border adjustment and conversion rather than reusing the domestic result."] },
+      { heading: "Fee communication and contracts", body: ["Do not silently add an unexplained surcharge after agreeing on a price. State in the proposal or contract whether payment-processing costs are included, absorbed, or reflected in the quoted total, and check whether passing fees to a client is permitted by the applicable agreement and local rules."] },
+    ],
+    faq: [
+      { q: "Should a freelancer absorb PayPal fees?", a: "That is a pricing and contract decision. Make it explicit before invoicing and confirm any applicable provider or local requirements." },
+      { q: "Which calculator mode fits a fixed project price?", a: "Use What I'll receive when the client pays a fixed gross price; use What I should charge when your agreement specifies a net amount." },
+      { q: "What details should I save with an estimate?", a: "Save the amount, countries, currencies, transaction type, source, and verification date without storing private customer information." },
+      { q: "Can an international client create two extra costs?", a: "Yes. A cross-border adjustment and currency conversion can be separate cost layers." },
     ],
   },
   {
@@ -143,6 +213,15 @@ export const contentPages: PageContent[] = [
       { heading: "Fees affect margin and pricing", body: ["For businesses, PayPal fees can affect product margins, invoice pricing, cross-border sales, and refund planning. A useful estimate separates base processing fees from international and currency-conversion assumptions."] },
       { heading: "Different payment products can price differently", body: ["Checkout-style payments, invoices, Goods and Services payments, and merchant card payments may not all share the same published rate. Choose the closest supported transaction type and confirm final pricing inside PayPal."] },
       { heading: "What businesses should track", body: ["Keep a record of the fee schedule used, verification date, currency, country pair, fixed fee, and whether your account has custom pricing. FeeClarity's methodology and rate log are built to make that audit trail visible."] },
+      { heading: "Transaction-mix planning", body: ["Estimate representative order sizes instead of one average alone. A business with many small transactions experiences fixed fees differently from a business with fewer large invoices. Separate domestic, international, and converted-currency scenarios so the forecast does not hide which activity causes the cost."] },
+      { heading: "Margin review example", body: ["For each representative sale, subtract the estimated PayPal fee from revenue, then review product cost, platform commission, tax treatment, shipping, refunds, and chargeback exposure separately. Compare the final contribution margin rather than choosing a provider from one advertised percentage."] },
+      { heading: "Reconcile estimates with actual statements", body: ["Periodically compare FeeClarity scenarios with completed PayPal transactions. Investigate differences in payment product, funding source, country classification, currency conversion, fixed fee, or account-specific pricing. Report reproducible rule discrepancies without sending customer or account credentials."] },
+    ],
+    faq: [
+      { q: "Why should businesses test multiple order sizes?", a: "Fixed fees have a greater effective impact on smaller transactions, while percentage fees scale with the gross amount." },
+      { q: "Does the calculator include every business expense?", a: "No. Product cost, taxes, platform commissions, shipping, refunds, disputes, and withdrawals may require separate analysis." },
+      { q: "Can custom PayPal pricing change the estimate?", a: "Yes. Published standard rates may not match a negotiated merchant agreement." },
+      { q: "How often should estimates be reconciled?", a: "Review them when PayPal changes pricing and periodically against actual transaction statements used by the business." },
     ],
   },
   {
@@ -153,6 +232,15 @@ export const contentPages: PageContent[] = [
       { heading: "Invoice fees depend on how the customer pays", body: ["A PayPal invoice can be paid through different funding methods, and some schedules distinguish invoice payments from other commercial payments. The selected country, payment type, and currency determine which verified rule FeeClarity can apply."] },
       { heading: "Estimate before you send the invoice", body: ["Use the standard calculator to estimate the amount received from a planned invoice amount, or use the reverse calculator when the invoice needs to produce a specific net amount after fees."] },
       { heading: "Final review checklist", body: ["Confirm the invoice amount, sender country, recipient country, payment currency, receiving currency, international status, and whether currency conversion will happen before relying on the estimate."] },
+      { heading: "Gross invoice versus net target", body: ["Use What I'll receive when the invoice total is already agreed. Use What I should charge when the agreement requires a specific amount after estimated fees. These are different calculations; adding a headline percentage to a net target does not correctly solve the reverse-fee problem."] },
+      { heading: "Domestic and international invoice example", body: ["Run a USD 500 invoice with matching account countries, then change only the client's account country. This isolates the international adjustment. If the client pays in another currency, make a third run with the true payment and receiving currencies to assess conversion separately."] },
+      { heading: "Troubleshooting an unexpected invoice fee", body: ["Check whether the customer paid through PayPal, Venmo, debit card, credit card, or another supported route; whether the recipient market was selected correctly; and whether PayPal converted the funds. Account-specific pricing and provider rounding can also explain differences from an estimate."] },
+    ],
+    faq: [
+      { q: "Is an invoice fee always the same as checkout?", a: "No. PayPal schedules can distinguish invoice, checkout, card-funded, and other commercial payment routes." },
+      { q: "How do I preserve a fixed net invoice amount?", a: "Use reverse mode with Invoice selected and confirm all route assumptions before sending the invoice." },
+      { q: "Why should international and conversion costs be tested separately?", a: "A payment can be cross-border without currency conversion, and conversion can occur independently of the international adjustment." },
+      { q: "What should I check when the actual fee differs?", a: "Review funding method, payment product, countries, currencies, custom pricing, conversion, and rounding against the completed transaction." },
     ],
   },
   ...[
@@ -189,7 +277,7 @@ export const contentPages: PageContent[] = [
     title: "PayPal Fee Rate Log",
     description: "A transparency log for PayPal fee sources and FeeClarity calculator rate verification updates.",
     sections: [
-      { heading: "Latest verification", body: ["FeeClarity last checked the implemented PayPal fee schedules on 2026-08-08 for the United States, Canada, United Kingdom, Australia, Philippines, and India. Each calculator result links to the official source used for that market."] },
+      { heading: "Latest verification", body: ["FeeClarity last checked the implemented PayPal fee schedules on 2026-09-30 for the United States, Canada, United Kingdom, Australia, Philippines, and India. Each calculator result links to the official source used for that market."] },
       { heading: "Exchange-rate data", body: ["Latest daily market exchange rates are loaded from Frankfurter when available. These rates are used as reference inputs only and are not claimed to be PayPal's final transaction exchange rate."] },
       { heading: "Why this matters", body: ["Payment providers can update published pricing, fixed fees, eligible payment methods, currency conversion spreads, and international add-ons. A public rate log makes future updates easier to audit and helps users understand when a calculator result was last reviewed."] },
     ],
@@ -216,6 +304,12 @@ export const contentPages: PageContent[] = [
       { heading: "How to compare without guessing", body: ["Run the PayPal estimate in FeeClarity for the exact amount, market, and currency. Then compare it with Stripe's current quote or pricing page for the same transaction details, including payout timing, chargeback exposure, refund handling, international treatment, and currency conversion."] },
       { heading: "What FeeClarity does not claim yet", body: ["FeeClarity does not currently include a verified Stripe pricing engine. This page should be used as a comparison checklist alongside the PayPal calculator and Stripe's current published pricing for your country and payment method."] },
     ],
+    faq: [
+      { q: "Does FeeClarity calculate Stripe fees?", a: "No. It calculates the supported PayPal side only and links to Stripe's current official pricing for a matched comparison." },
+      { q: "What details must match in a PayPal and Stripe comparison?", a: "Use the same merchant country, customer location, payment method, amount, presentment currency, settlement currency, and payout assumptions." },
+      { q: "Is the lowest processing percentage always the cheapest option?", a: "No. Fixed fees, international cards, currency conversion, refunds, disputes, payouts, subscriptions, and custom pricing can change total cost." },
+      { q: "When should Stripe pricing be checked again?", a: "Check the official pricing immediately before making a provider decision because pricing and product eligibility can change by market." },
+    ],
   },
   {
     path: "/paypal-vs-payoneer/",
@@ -228,6 +322,12 @@ export const contentPages: PageContent[] = [
       { heading: "When Payoneer may fit better", body: ["Payoneer may be considered for marketplace payouts, contractor payments, receiving accounts, and cross-border business workflows. FeeClarity does not currently calculate Payoneer pricing, so users should confirm a current Payoneer quote or published fee schedule for the exact route."] },
       { heading: "How to compare fairly", body: ["Compare the final amount available to withdraw, not only the advertised transaction fee. Include receiving charges, currency conversion, withdrawal costs, payout timing, supported currencies, account requirements, and whether the payer or marketplace controls the payment route."] },
       { heading: "What FeeClarity does not claim yet", body: ["FeeClarity does not currently include a verified Payoneer pricing engine. Use the PayPal calculator for the PayPal estimate, then compare it with Payoneer's current published pricing or quote for the exact route."] },
+    ],
+    faq: [
+      { q: "Does FeeClarity calculate Payoneer fees?", a: "No. FeeClarity calculates supported PayPal scenarios and links to Payoneer's official pricing for a current route-specific comparison." },
+      { q: "What should freelancers compare beyond a receiving fee?", a: "Compare currency conversion, receiving-account rules, marketplace costs, withdrawal charges, payout timing, supported currencies, and the final amount available in the bank account." },
+      { q: "Can marketplace payout pricing differ from direct client payments?", a: "Yes. The platform, payment route, account country, currencies, and withdrawal method can change the applicable Payoneer cost." },
+      { q: "Why does this page avoid declaring one universal winner?", a: "PayPal and Payoneer serve overlapping but different workflows, and the cheaper result depends on the exact route and current provider quote." },
     ],
   },
   {
@@ -250,6 +350,7 @@ export const contentPages: PageContent[] = [
       { heading: "Independent and source-led", body: ["FeeClarity is not affiliated with PayPal, Wise, Stripe, Payoneer, or any other payment provider mentioned on the site. Provider names are used only to identify services, fee schedules, comparison topics, and calculator inputs.", "Where FeeClarity displays actual PayPal fee values, the site links to published sources and shows source metadata such as effective dates and last verification dates. Unsupported markets or payment configurations should be labeled clearly rather than estimated from another country's pricing."] },
       { heading: "What FeeClarity publishes", body: ["FeeClarity publishes original calculators, fee explainers, country-specific PayPal fee notes, provider comparisons, methodology notes, rate-source transparency pages, privacy information, advertising policy notes, and contact guidance.", "Content is written to answer practical payment-fee questions instead of filling pages with repeated keyword text. Pages should help users calculate a fee, understand a specific scenario, compare decision factors, verify a source, or learn how FeeClarity handles uncertainty."] },
       { heading: "How content is reviewed", body: ["Published fee values are tied to source labels, effective dates, and verification dates where available. When a rule cannot be confidently verified, FeeClarity should label the limitation or block the estimate rather than substitute another market's pricing.", "Corrections are handled through the contact page. Useful correction reports include the provider, market, official source URL, effective date, page URL, and non-sensitive calculator inputs needed to reproduce the result."] },
+      { heading: "Editorial responsibility", body: ["The FeeClarity Editorial Team at LaunchLab is responsible for reviewing calculator explanations, source labels, worked examples, limitations, and corrections. Content reviewed on September 30, 2026 was checked against the implemented rule data and linked provider documentation available to the project on that date.", "This team label identifies the accountable project operator and does not claim professional financial, legal, tax, or accounting credentials. FeeClarity will add an individual reviewer biography only when the operator chooses to publish accurate identity and experience information."] },
       { heading: "How the site earns money", body: ["FeeClarity may earn revenue from advertising. Ads do not influence the fee rules, calculation methodology, source verification, unsupported-configuration decisions, warnings, page conclusions, or editorial coverage.", "The calculator and educational content are intended to remain the primary experience. Advertising should be clearly separated from calculator controls, forms, navigation, and calculation results."] },
     ],
   },
@@ -288,6 +389,7 @@ export const contentPages: PageContent[] = [
       { heading: "Editorial independence", body: ["Advertising does not influence FeeClarity's fee rules, source verification, calculator methodology, warnings, or unsupported-configuration decisions."] },
       { heading: "User experience standards", body: ["FeeClarity avoids pop-ups, pop-unders, misleading ad labels, forced downloads, and layouts where ads outweigh useful content. The calculator and educational content remain the primary page experience."] },
       { heading: "Ad placement during review", body: ["While advertising approval is being reviewed, FeeClarity may keep visible ad placements minimal so users and reviewers see complete utility content rather than empty ad boxes. Approved ads should remain secondary to the calculator and source-backed educational content."] },
+      { heading: "Pages eligible for advertising", body: ["Google-served ad units should be limited to pages with substantial FeeClarity content or a complete working calculator. Navigation-only pages, error pages, alerts, unfinished pages, and screens without meaningful publisher content should not contain ad units.", "Ads must not overlay, imitate, or sit so close to calculator controls, navigation, copy buttons, or other actions that a visitor could click an ad unintentionally. Paid material must never outweigh the publisher content on the screen."] },
       { heading: "Policy compliance", body: ["FeeClarity is designed to follow Google AdSense and Google Publisher policy expectations, including original content, clear navigation, transparent About and Contact pages, and responsible ad implementation."] },
     ],
   },

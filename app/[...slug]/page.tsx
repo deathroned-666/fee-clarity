@@ -13,6 +13,7 @@ import { Disclaimer, JsonLd, SeoArticle } from "@/components/SeoBlocks";
 import { getPage, contentPages } from "@/lib/content";
 import { calculateFees } from "@/lib/fees/engine";
 import { PAYPAL_CONSUMER_SOURCE_US, PAYPAL_SOURCE_US, paypalRules } from "@/lib/fees/paypal-rules";
+import type { CountryCode, CurrencyCode, TransactionType } from "@/lib/fees/types";
 import { canonical, siteUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string[] }> };
@@ -29,6 +30,8 @@ const paypalVerificationDate = paypalRules
 const formattedPaypalVerificationDate = paypalVerificationDate
   ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${paypalVerificationDate}T00:00:00Z`))
   : null;
+
+const contentReviewDate = "September 30, 2026";
 
 const comparisonRows = [
   ["Best for", "Online payments and checkout", "International transfers and multi-currency payments"],
@@ -75,7 +78,51 @@ const comparisonFaqs: FaqItem[] = [
 ];
 
 const corePaths = new Set(["/paypal-fee-calculator/", "/paypal-reverse-fee-calculator/", "/paypal-international-fee-calculator/", "/paypal-fees/"]);
-const supportPaths = new Set(["/paypal-currency-conversion-calculator/", "/paypal-fees/us/", "/methodology/", "/rate-log/"]);
+const countryPathCodes: Record<string, CountryCode> = {
+  "/paypal-fees/us/": "US",
+  "/paypal-fees/canada/": "CA",
+  "/paypal-fees/uk/": "GB",
+  "/paypal-fees/australia/": "AU",
+  "/paypal-fees/philippines/": "PH",
+  "/paypal-fees/india/": "IN",
+};
+const supportPaths = new Set(["/paypal-currency-conversion-calculator/", ...Object.keys(countryPathCodes), "/methodology/", "/rate-log/"]);
+
+const countryCurrencies: Record<CountryCode, CurrencyCode> = {
+  US: "USD",
+  CA: "CAD",
+  GB: "GBP",
+  AU: "AUD",
+  PH: "PHP",
+  IN: "INR",
+};
+
+const calculatorDefaultsByPath: Record<string, {
+  defaultTransactionType?: TransactionType;
+  defaultAccountCountry?: CountryCode;
+  defaultOtherCountry?: CountryCode;
+  defaultPaymentCurrency?: CurrencyCode;
+  defaultReceivingCurrency?: CurrencyCode;
+}> = {
+  "/paypal-international-fee-calculator/": { defaultAccountCountry: "CA", defaultOtherCountry: "US", defaultPaymentCurrency: "CAD", defaultReceivingCurrency: "CAD" },
+  "/paypal-currency-conversion-calculator/": { defaultPaymentCurrency: "USD", defaultReceivingCurrency: "EUR" },
+  "/paypal-invoice-fee-calculator/": { defaultTransactionType: "invoice" },
+  "/paypal-goods-and-services-fee-calculator/": { defaultTransactionType: "goods_services" },
+  "/paypal-merchant-fee-calculator/": { defaultTransactionType: "merchant" },
+  "/paypal-fees-for-freelancers/": { defaultTransactionType: "invoice" },
+  "/paypal-fees-for-invoices/": { defaultTransactionType: "invoice" },
+  "/paypal-fees-for-business/": { defaultTransactionType: "merchant" },
+};
+
+for (const [path, country] of Object.entries(countryPathCodes)) {
+  const currency = countryCurrencies[country];
+  calculatorDefaultsByPath[path] = {
+    defaultAccountCountry: country,
+    defaultOtherCountry: country === "IN" ? "US" : country,
+    defaultPaymentCurrency: currency,
+    defaultReceivingCurrency: currency,
+  };
+}
 
 function breadcrumbsForPage(page: NonNullable<ReturnType<typeof getPage>>): BreadcrumbItem[] {
   if (page.path.startsWith("/paypal-fees/") && page.path !== "/paypal-fees/") {
@@ -122,7 +169,22 @@ function ArticleSection({ title, children }: { title: string; children: React.Re
   );
 }
 
+function ReviewByline() {
+  return (
+    <p className="mt-4 text-sm leading-6 text-muted">
+      Reviewed by <Link href="/about/" className="font-semibold text-mint">FeeClarity Editorial Team at LaunchLab</Link>
+      {" · "}Content reviewed {contentReviewDate}
+    </p>
+  );
+}
+
 function ContentSections({ page }: { page: NonNullable<ReturnType<typeof getPage>> }) {
+  const comparisonSource = {
+    "/paypal-vs-stripe/": { label: "Stripe pricing", url: "https://stripe.com/pricing" },
+    "/paypal-vs-payoneer/": { label: "Payoneer pricing", url: "https://www.payoneer.com/about/pricing/" },
+  }[page.path];
+  const showFeeSource = page.path.includes("paypal") || page.path === "/methodology/" || page.path === "/rate-log/";
+
   return (
     <>
       {page.sections.map((section) => (
@@ -130,9 +192,26 @@ function ContentSections({ page }: { page: NonNullable<ReturnType<typeof getPage
           {section.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         </ArticleSection>
       ))}
-      <ArticleSection title="Fee source transparency">
-        <p>Where FeeClarity displays actual PayPal fee values, the source is PayPal's published fee documentation and the calculator shows the last verified date. Unsupported markets are clearly labeled rather than estimated from another country's rates.</p>
-      </ArticleSection>
+      {showFeeSource ? (
+        <ArticleSection title="Fee source transparency">
+          <p>Where FeeClarity displays actual PayPal fee values, the source is PayPal's published fee documentation and the calculator shows the last verified date. Unsupported markets are clearly labeled rather than estimated from another country's rates.</p>
+          {comparisonSource ? (
+            <p>
+              FeeClarity does not calculate the other provider's current quote. Check the provider's
+              {" "}<a href={comparisonSource.url} className="font-semibold text-mint">official {comparisonSource.label}</a>
+              {" "}for the same country, payment method, amount, and currency route before deciding.
+            </p>
+          ) : null}
+        </ArticleSection>
+      ) : null}
+      {page.path === "/privacy/" ? (
+        <ArticleSection title="How Google uses partner-site data">
+          <p>
+            Google explains how it processes information from sites and apps that use its services in
+            {" "}<a href="https://policies.google.com/technologies/partner-sites" className="font-semibold text-mint">How Google uses information from sites or apps that use our services</a>.
+          </p>
+        </ArticleSection>
+      ) : null}
     </>
   );
 }
@@ -195,6 +274,56 @@ const countryNames: Record<string, string> = {
   IN: "India",
 };
 
+const countryGuidance: Record<CountryCode, { title: string; paragraphs: string[] }> = {
+  US: {
+    title: "What is distinctive about the US implementation",
+    paragraphs: [
+      "The US rule set distinguishes Goods & Services, invoice and checkout-style commercial payments, and standard merchant card payments. That product-level distinction is why the US page has a broader table than markets where the currently verified schedule is represented by one commercial rate family.",
+      "The implemented Goods & Services rule does not add the usual currency-specific fixed fee, while invoice, commercial, and merchant card rules can. Select the actual product rather than assuming every US payment uses 3.49% plus USD 0.49.",
+    ],
+  },
+  CA: {
+    title: "Canada: the sender's market changes the international adjustment",
+    paragraphs: [
+      "The implemented Canada schedule uses a 2.90% domestic commercial rate plus a supported currency fixed fee. For cross-border receiving, FeeClarity treats a sender in the United States differently from other supported international senders.",
+      "A US sender adds 0.80%, while other supported international senders add 1.00%. When testing a Canadian transaction, do not use a generic International checkbox without also selecting the real sender country; the sender selection carries useful rate information.",
+      "For CAD receiving, the implemented fixed fee is CAD 0.30. If the payment arrives in another supported currency, select that receiving currency so the calculator uses the matching fixed-fee entry instead of converting CAD 0.30 by assumption.",
+    ],
+  },
+  GB: {
+    title: "United Kingdom: check the sender region before applying an add-on",
+    paragraphs: [
+      "The implemented UK commercial rule uses a 2.90% domestic rate plus a supported currency fixed fee. The current selector applies the published 1.99% international commercial add-on to the supported non-EEA sender markets represented in FeeClarity.",
+      "That does not mean every foreign sender worldwide should automatically receive the same treatment. Regional PayPal definitions and eligible payment routes can be more detailed than this calculator's country list, so unsupported EEA distinctions should be confirmed from the UK source rather than inferred.",
+      "For GBP receiving, the implemented fixed fee is GBP 0.30. A transaction charged in USD but settled in GBP also introduces currency conversion, which should remain separate from the international classification.",
+    ],
+  },
+  AU: {
+    title: "Australia: separate the international percentage from conversion",
+    paragraphs: [
+      "The implemented Australia commercial rule uses a 2.90% domestic rate plus the supported currency fixed fee. A supported international commercial payment adds 1.00% before any separate currency-conversion estimate.",
+      "An Australian recipient paid in AUD by an overseas account can be international without conversion. Conversely, an Australian-to-Australian payment presented in another currency can involve conversion without using the international add-on. Testing those cases separately prevents one cost from being mistaken for the other.",
+      "For AUD receiving, the implemented fixed fee is AUD 0.30. Confirm whether PayPal actually settles the payment in AUD before using that fixed-fee assumption.",
+    ],
+  },
+  PH: {
+    title: "Philippines: published total and component view",
+    paragraphs: [
+      "The implemented Philippines schedule uses a 3.40% domestic commercial rate plus a supported currency fixed fee. The source describes a 4.40% total rate for the represented international commercial scenario, so FeeClarity shows the 1.00% international portion separately to make the total auditable.",
+      "For PHP receiving, the implemented fixed fee is PHP 15.00. This is different from the US schedule's PHP fixed-fee entry, which is why selecting the recipient account country correctly matters even when both transactions are denominated in Philippine pesos.",
+      "The implemented 3.00% conversion-spread metadata is an estimate derived from published regional language, not a live PayPal exchange quote. When PayPal displays a final transaction rate, compare that rate directly and avoid adding the spread twice.",
+    ],
+  },
+  IN: {
+    title: "India: domestic receiving is intentionally unavailable",
+    paragraphs: [
+      "The implemented India rule is international-only. FeeClarity blocks a domestic India receiving estimate instead of replacing it with another country's commercial rate or silently treating the transaction as international.",
+      "For a supported international commercial receipt, the implemented percentage is 4.40% plus the fixed fee for the receiving currency. For INR, the stored fixed fee is INR 3.00. The sender country must differ from India for this rule to produce a supported estimate.",
+      "A payment sent in USD and settled in INR also requires an exchange-rate decision. Keep the 4.40% receiving rule, the INR fixed fee, and any conversion impact as separate assumptions so the estimate can be compared with PayPal's final transaction details.",
+    ],
+  },
+};
+
 const supportFaqs: Record<string, FaqItem[]> = {
   "/paypal-currency-conversion-calculator/": [
     { q: "Is the market reference rate PayPal's exchange rate?", a: "No. The reference rate is a neutral benchmark. PayPal's displayed transaction exchange rate may differ and can be entered manually when available." },
@@ -218,6 +347,51 @@ const supportFaqs: Record<string, FaqItem[]> = {
   ],
 };
 
+function countryFaqs(country: CountryCode): FaqItem[] {
+  const name = countryNames[country] ?? country;
+  const currency = countryCurrencies[country];
+  const rule = paypalRules.find((candidate) => candidate.country === country && candidate.transactionType === "commercial");
+  if (!rule) return [];
+
+  const fixedFee = rule.fixedFees[currency];
+  const internationalDetail = country === "CA"
+    ? "The implemented Canada rule adds 0.80% for a US sender and 1.00% for other supported international senders."
+    : `The implemented ${name} rule uses a ${rule.internationalPercent}% international adjustment for supported cross-border scenarios.`;
+
+  return [
+    {
+      q: `Which PayPal fee rules are implemented for ${name}?`,
+      a: `${rule.source.notes} FeeClarity applies only the transaction types and configurations represented in its verified rule table.`,
+    },
+    {
+      q: `What fixed fee is used for ${currency}?`,
+      a: fixedFee
+        ? `The currently implemented ${name} commercial rule uses a fixed fee of ${fixedFee} ${currency} when a fixed fee applies.`
+        : `No ${currency} fixed fee is currently implemented for this rule. Check the linked source before relying on the result.`,
+    },
+    {
+      q: `How does FeeClarity identify an international payment to ${name}?`,
+      a: `The calculator compares the sender and recipient account countries. ${internationalDetail}`,
+    },
+    {
+      q: `Can ${name} PayPal accounts have different pricing?`,
+      a: "Yes. Account type, product eligibility, funding source, merchant agreement, and custom pricing can change the final fee shown by PayPal.",
+    },
+    {
+      q: `When were the implemented ${name} rules checked?`,
+      a: `The source was last verified ${rule.source.lastVerified} and lists an effective date of ${rule.source.effectiveDate}. Use the linked official source for the latest provider terms.`,
+    },
+  ];
+}
+
+function faqsForPath(path: string, isCorePage: boolean, isSupportPage: boolean) {
+  if (isCorePage) return coreFaqs[path];
+  const country = countryPathCodes[path];
+  if (country) return countryFaqs(country);
+  if (isSupportPage) return supportFaqs[path];
+  return undefined;
+}
+
 export function generateStaticParams() {
   return contentPages.map((page) => ({ slug: page.path.split("/").filter(Boolean) }));
 }
@@ -229,6 +403,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: page.title,
     description: page.description,
+    authors: [{ name: "FeeClarity Editorial Team", url: canonical("/about/") }],
     alternates: { canonical: canonical(page.path) },
     openGraph: { title: page.title, description: page.description, url: canonical(page.path), type: "website" },
   };
@@ -245,6 +420,8 @@ export default async function DynamicPage({ params }: Props) {
   const isCorePage = corePaths.has(page.path);
   const isSupportPage = supportPaths.has(page.path);
   const breadcrumbItems = breadcrumbsForPage(page);
+  const calculatorDefaults = calculatorDefaultsByPath[page.path] ?? {};
+  const pageFaqs = faqsForPath(page.path, isCorePage, isSupportPage);
 
   return (
     <>
@@ -256,10 +433,11 @@ export default async function DynamicPage({ params }: Props) {
               <p className="text-sm font-semibold uppercase tracking-wide text-mint">FeeClarity guide</p>
               <h1 className="mt-2 text-4xl font-bold leading-tight md:text-5xl">{page.title}</h1>
               <p className="mt-4 text-lg leading-8 text-muted">{page.description}</p>
+              <ReviewByline />
               {isCorePage ? <HeroTrustRow ariaLabel={`${page.title} trust signals`} /> : null}
               {isSupportPage ? <SupportTrustRow path={page.path} title={page.title} /> : null}
             </div>
-            {isUtility && <Calculator defaultMode={page.calculatorMode ?? "receiving"} compact={!page.path.includes("calculator")} />}
+            {isUtility && <Calculator defaultMode={page.calculatorMode ?? "receiving"} compact={!page.path.includes("calculator")} {...calculatorDefaults} />}
           </div>
         </section>
         <SeoArticle>
@@ -276,10 +454,8 @@ export default async function DynamicPage({ params }: Props) {
               {faqIntroByPath[page.path] ?? "Common questions about FeeClarity estimates and source-backed PayPal fee calculations."}
             </SectionHeading>
             <div className="mt-6">
-          {isCorePage ? (
-            <FaqAccordion items={coreFaqs[page.path]} />
-          ) : isSupportPage ? (
-            <FaqAccordion items={supportFaqs[page.path]} />
+          {pageFaqs ? (
+            <FaqAccordion items={pageFaqs} />
           ) : (
             <FaqAccordion items={page.faq ?? [
               { q: "Is FeeClarity affiliated with PayPal?", a: "No. FeeClarity is independent and does not use PayPal branding as its own identity." },
@@ -304,13 +480,16 @@ export default async function DynamicPage({ params }: Props) {
         name: page.title,
         description: page.description,
         url: `${siteUrl}${page.path}`,
+        dateModified: "2026-09-30",
+        author: { "@type": "Organization", name: "FeeClarity Editorial Team at LaunchLab", url: `${siteUrl}/about/` },
+        publisher: { "@type": "Organization", name: "LaunchLab", url: `${siteUrl}/about/` },
       }} />
       <JsonLd data={breadcrumbJsonLd(breadcrumbItems)} />
-      {isCorePage || isSupportPage ? (
+      {pageFaqs ? (
         <JsonLd data={{
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          mainEntity: (isCorePage ? coreFaqs[page.path] : supportFaqs[page.path]).map((faq) => ({
+          mainEntity: pageFaqs.map((faq) => ({
             "@type": "Question",
             name: faq.q,
             acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -493,6 +672,7 @@ function CoreLowerContent({ path }: { path: string }) {
 
 function SupportTrustRow({ path, title }: { path: string; title: string }) {
   const checked = formattedPaypalVerificationDate ? `Last checked ${formattedPaypalVerificationDate}` : "Published PayPal fee sources";
+  const country = countryPathCodes[path];
   const itemsByPath: Record<string, string[]> = {
     "/paypal-currency-conversion-calculator/": ["Independent calculation", "Reference rates clearly labeled", "PayPal fees sourced separately"],
     "/paypal-fees/us/": ["Verified US fee rules", "Published PayPal sources", checked],
@@ -504,7 +684,9 @@ function SupportTrustRow({ path, title }: { path: string; title: string }) {
     <div className="mt-5">
       <TrustStrip
         ariaLabel={`${title} trust signals`}
-        items={itemsByPath[path] ?? ["Independent tool", "Published PayPal fee sources", "Source-backed estimates"]}
+        items={itemsByPath[path] ?? (country
+          ? [`Verified ${countryNames[country]} fee rules`, "Published PayPal source", checked]
+          : ["Independent tool", "Published PayPal fee sources", "Source-backed estimates"])}
         note="FeeClarity is not affiliated with PayPal."
       />
     </div>
@@ -514,6 +696,7 @@ function SupportTrustRow({ path, title }: { path: string; title: string }) {
 function SupportLowerContent({ path }: { path: string }) {
   if (path === "/paypal-currency-conversion-calculator/") return <CurrencyConversionLowerContent />;
   if (path === "/paypal-fees/us/") return <UsFeesLowerContent />;
+  if (countryPathCodes[path]) return <CountryFeesLowerContent country={countryPathCodes[path]} />;
   if (path === "/methodology/") return <MethodologyLowerContent />;
   return <RateLogLowerContent />;
 }
@@ -677,6 +860,108 @@ function UsFeeTable() {
       </nav>
     </section>
   );
+}
+
+function CountryFeesLowerContent({ country }: { country: CountryCode }) {
+  const name = countryNames[country] ?? country;
+  const currency = countryCurrencies[country];
+  const rows = paypalRules.filter((rule) => rule.country === country);
+  const primaryRule = rows.find((rule) => rule.transactionType === "commercial") ?? rows[0];
+  const internationalSender: CountryCode = country === "US" ? "CA" : "US";
+  const scenarios = country === "IN"
+    ? [
+        [`1,000 ${currency} international commercial payment`, calculateFees({ amount: "1000", mode: "receiving", accountCountry: country, otherCountry: internationalSender, transactionType: "commercial", paymentCurrency: currency, receivingCurrency: currency })],
+        [`10,000 ${currency} international invoice payment`, calculateFees({ amount: "10000", mode: "receiving", accountCountry: country, otherCountry: internationalSender, transactionType: "invoice", paymentCurrency: currency, receivingCurrency: currency })],
+      ] as const
+    : [
+        [`1,000 ${currency} domestic commercial payment`, calculateFees({ amount: "1000", mode: "receiving", accountCountry: country, otherCountry: country, transactionType: "commercial", paymentCurrency: currency, receivingCurrency: currency })],
+        [`1,000 ${currency} payment from ${countryNames[internationalSender]}`, calculateFees({ amount: "1000", mode: "receiving", accountCountry: country, otherCountry: internationalSender, transactionType: "commercial", paymentCurrency: currency, receivingCurrency: currency })],
+      ] as const;
+
+  return (
+    <>
+      <section className="not-prose">
+        <SectionHeading title={`Verified PayPal rules for ${name}`}>
+          This table contains only the ${name} rules currently implemented in FeeClarity. It is generated from the same versioned rule data used by the calculator, not copied from another country page.
+        </SectionHeading>
+        <div className="mt-6 overflow-x-auto rounded border border-line bg-white">
+          <table className="w-full min-w-[760px] text-left text-sm">
+            <caption className="sr-only">Verified PayPal fee rules implemented for {name}</caption>
+            <thead className="bg-paper text-muted">
+              <tr>
+                <th className="px-4 py-3">Payment type</th>
+                <th className="px-4 py-3">Domestic rate</th>
+                <th className="px-4 py-3">International adjustment</th>
+                <th className="px-4 py-3">Fixed fee in {currency}</th>
+                <th className="px-4 py-3">Support status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((rule) => (
+                <tr key={`${country}-${rule.transactionType}`} className="border-t border-line align-top">
+                  <th scope="row" className="px-4 py-3 font-medium text-ink">{transactionLabels[rule.transactionType] ?? rule.transactionType}</th>
+                  <td className="px-4 py-3">{rule.domesticUnsupported ? "Not supported" : `${rule.domesticPercent}%`}</td>
+                  <td className="px-4 py-3">
+                    {country === "CA" ? `0.80% from US; ${rule.internationalPercent}% other supported senders` : `${rule.internationalPercent}%`}
+                  </td>
+                  <td className="px-4 py-3">{rule.appliesFixedFee === false ? "Not applied" : `${rule.fixedFees[currency] ?? "Not verified"} ${currency}`}</td>
+                  <td className="px-4 py-3">{rule.domesticUnsupported ? "International receiving only" : "Domestic and supported international receiving"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-4 text-sm leading-6 text-muted">{primaryRule.source.notes}</p>
+      </section>
+
+      <ArticleSection title={countryGuidance[country].title}>
+        {countryGuidance[country].paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      </ArticleSection>
+
+      <section className="not-prose">
+        <SectionHeading title={`Worked ${name} examples`}>
+          These examples use {currency}, the implemented commercial or invoice rule, and no currency conversion. They are reproducible calculator tests, not universal PayPal quotes.
+        </SectionHeading>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {scenarios.map(([title, result]) => (
+            <section key={title} className="rounded-lg border border-line bg-white p-5">
+              <h3 className="text-xl font-semibold text-ink">{title}</h3>
+              <dl className="mt-4 grid gap-2 text-sm text-muted">
+                <div className="flex justify-between gap-4"><dt>Applied rule</dt><dd className="text-right font-medium text-ink">{result.rateUsed}</dd></div>
+                <div className="flex justify-between gap-4"><dt>Estimated fee</dt><dd className="font-medium text-ink">{formatMoney(result.totalFees, currency)}</dd></div>
+                <div className="flex justify-between gap-4"><dt>Estimated received</dt><dd className="font-medium text-ink">{formatMoney(result.netReceived, currency)}</dd></div>
+              </dl>
+              <p className="mt-4 text-xs leading-5 text-muted">{result.assumptions.join("; ")}.</p>
+              {result.warnings.length ? <p className="mt-3 text-xs leading-5 text-amber-800">{result.warnings.join(" ")}</p> : null}
+            </section>
+          ))}
+        </div>
+      </section>
+
+      <PageInfoCard
+        title={`What to verify for a ${name} payment`}
+        intro="Match the calculator to the real payment route before relying on the estimate."
+        items={[
+          `The recipient PayPal account is registered in ${name}`,
+          `The payment or receiving currency is ${currency}, or the correct fixed-fee currency is selected`,
+          country === "IN" ? "The transaction is international; domestic India receiving is blocked" : "Sender and recipient countries correctly identify domestic or international status",
+          "The selected transaction type matches the actual PayPal product",
+          "Any currency conversion is shown separately from processing fees",
+          "Account-specific or negotiated pricing has been checked inside PayPal",
+        ]}
+      />
+
+      <ImportantNote title="Common country-page mistake">
+        Do not select a country merely to obtain a lower published rate. The recipient country represents where the receiving PayPal account is registered, and PayPal may apply account-specific or route-specific pricing that differs from this estimate.
+      </ImportantNote>
+
+      <SourceTransparencyCard source={primaryRule.source} market={name} />
+    </>
+  );
+}
+
+function formatMoney(value: string, currency: CurrencyCode) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(Number(value));
 }
 
 function MethodologyLowerContent() {

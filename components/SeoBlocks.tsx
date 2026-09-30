@@ -17,6 +17,10 @@ export function PageHero({ title, description, calculatorMode }: { title: string
             <p className="text-sm font-semibold uppercase tracking-wide text-mint">Independent - verified against official rates</p>
             <h1 className="mt-2 text-4xl font-bold leading-tight md:text-5xl">{title}</h1>
             <p className="mt-4 max-w-[720px] text-lg leading-8 text-muted md:text-xl md:leading-8">{description}</p>
+            <p className="mt-4 text-sm leading-6 text-muted">
+              Reviewed by <Link href="/about/" className="font-semibold text-mint">FeeClarity Editorial Team at LaunchLab</Link>
+              {" · "}Content reviewed September 30, 2026
+            </p>
             <HeroTrustRow ariaLabel="Calculator trust signals" />
           </div>
             <Calculator defaultMode={calculatorMode ?? "receiving"} />
@@ -120,4 +124,3 @@ export function ExamplesTable() {
 function formatExampleCurrency(value: string) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(value));
 }
-

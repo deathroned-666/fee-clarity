@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "audit:content": "tsx scripts/content-audit.ts"
+    "audit:content": "node --experimental-strip-types scripts/content-audit.ts"
   },
   "dependencies": {
     "decimal.js": "^10.4.3",
