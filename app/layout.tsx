@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 const nav = [
-  ["Calculator", "/paypal-fee-calculator/"],
+  ["Calculator", "/"],
   ["Reverse", "/paypal-reverse-fee-calculator/"],
   ["International", "/paypal-international-fee-calculator/"],
   ["Fees Guide", "/paypal-fees/"],
@@ -45,7 +45,7 @@ const footerLegal = [
 ];
 
 const footerTools = [
-  ["PayPal Fee Calculator", "/paypal-fee-calculator/"],
+  ["PayPal Fee Calculator", "/"],
   ["Reverse PayPal Fee Calculator", "/paypal-reverse-fee-calculator/"],
   ["International PayPal Fee Calculator", "/paypal-international-fee-calculator/"],
   ["Currency Conversion Calculator", "/paypal-currency-conversion-calculator/"],

@@ -10,7 +10,7 @@ export function PrimaryNav({ items }: { items: string[][] }) {
     <nav aria-label="Primary navigation" className="w-full overflow-x-auto sm:w-auto">
       <div className="flex min-w-max items-center gap-1 rounded-xl border border-line bg-white/90 p-1 shadow-sm">
         {items.map(([label, href]) => {
-          const active = pathname === href || (href !== "/paypal-fee-calculator/" && pathname.startsWith(href));
+          const active = href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href);
 
           return (
             <Link

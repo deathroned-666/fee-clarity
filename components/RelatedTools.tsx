@@ -8,7 +8,7 @@ const tools: Record<ToolKey, { title: string; description: string; href: string;
   calculator: {
     title: "PayPal Fee Calculator",
     description: "Estimate PayPal fees and the amount you may actually receive.",
-    href: "/paypal-fee-calculator/",
+    href: "/",
     cta: "Open calculator",
     icon: CalculatorIcon,
   },
@@ -44,7 +44,6 @@ const tools: Record<ToolKey, { title: string; description: string; href: string;
 
 const relatedByPage: Record<string, ToolKey[]> = {
   "/": ["reverse", "international", "conversion", "fees"],
-  "/paypal-fee-calculator/": ["reverse", "international", "conversion", "fees"],
   "/paypal-reverse-fee-calculator/": ["calculator", "international", "fees"],
   "/paypal-international-fee-calculator/": ["calculator", "reverse", "conversion", "fees"],
   "/paypal-fees/": ["calculator", "reverse", "international", "conversion"],

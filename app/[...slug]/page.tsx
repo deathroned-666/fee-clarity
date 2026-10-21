@@ -14,7 +14,7 @@ import { getPage, contentPages } from "@/lib/content";
 import { calculateFees } from "@/lib/fees/engine";
 import { PAYPAL_CONSUMER_SOURCE_US, PAYPAL_SOURCE_US, paypalRules } from "@/lib/fees/paypal-rules";
 import type { CountryCode, CurrencyCode, TransactionType } from "@/lib/fees/types";
-import { canonical, siteUrl } from "@/lib/site";
+import { canonical, consolidatedRedirects, siteUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string[] }> };
 
@@ -31,7 +31,7 @@ const formattedPaypalVerificationDate = paypalVerificationDate
   ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${paypalVerificationDate}T00:00:00Z`))
   : null;
 
-const contentReviewDate = "September 30, 2026";
+const contentReviewDate = "October 22, 2026";
 
 const comparisonRows = [
   ["Best for", "Online payments and checkout", "International transfers and multi-currency payments"],
@@ -77,7 +77,12 @@ const comparisonFaqs: FaqItem[] = [
   { q: "How should I compare the real cost of a transaction?", a: "Compare the transaction fee, international fee, currency conversion, exchange rate, payout fee, and final recipient amount using the same amount, currency pair, and destination." },
 ];
 
-const corePaths = new Set(["/paypal-fee-calculator/", "/paypal-reverse-fee-calculator/", "/paypal-international-fee-calculator/", "/paypal-fees/"]);
+const corePaths = new Set(["/paypal-reverse-fee-calculator/", "/paypal-international-fee-calculator/", "/paypal-fees/"]);
+const calculatorPaths = new Set([
+  "/paypal-reverse-fee-calculator/",
+  "/paypal-international-fee-calculator/",
+  "/paypal-currency-conversion-calculator/",
+]);
 const countryPathCodes: Record<string, CountryCode> = {
   "/paypal-fees/us/": "US",
   "/paypal-fees/canada/": "CA",
@@ -106,23 +111,7 @@ const calculatorDefaultsByPath: Record<string, {
 }> = {
   "/paypal-international-fee-calculator/": { defaultAccountCountry: "CA", defaultOtherCountry: "US", defaultPaymentCurrency: "CAD", defaultReceivingCurrency: "CAD" },
   "/paypal-currency-conversion-calculator/": { defaultPaymentCurrency: "USD", defaultReceivingCurrency: "EUR" },
-  "/paypal-invoice-fee-calculator/": { defaultTransactionType: "invoice" },
-  "/paypal-goods-and-services-fee-calculator/": { defaultTransactionType: "goods_services" },
-  "/paypal-merchant-fee-calculator/": { defaultTransactionType: "merchant" },
-  "/paypal-fees-for-freelancers/": { defaultTransactionType: "invoice" },
-  "/paypal-fees-for-invoices/": { defaultTransactionType: "invoice" },
-  "/paypal-fees-for-business/": { defaultTransactionType: "merchant" },
 };
-
-for (const [path, country] of Object.entries(countryPathCodes)) {
-  const currency = countryCurrencies[country];
-  calculatorDefaultsByPath[path] = {
-    defaultAccountCountry: country,
-    defaultOtherCountry: country === "IN" ? "US" : country,
-    defaultPaymentCurrency: currency,
-    defaultReceivingCurrency: currency,
-  };
-}
 
 function breadcrumbsForPage(page: NonNullable<ReturnType<typeof getPage>>): BreadcrumbItem[] {
   if (page.path.startsWith("/paypal-fees/") && page.path !== "/paypal-fees/") {
@@ -398,12 +387,23 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const page = getPage(pathFromSlug(slug));
+  const path = pathFromSlug(slug);
+  const page = getPage(path);
   if (!page) return {};
+  const redirectTarget = consolidatedRedirects[path];
+  if (redirectTarget) {
+    return {
+      title: "Page moved",
+      description: "This FeeClarity page has been consolidated into a more complete calculator or guide.",
+      robots: { index: false, follow: true },
+      alternates: { canonical: canonical(redirectTarget) },
+    };
+  }
   return {
     title: page.title,
     description: page.description,
     authors: [{ name: "FeeClarity Editorial Team", url: canonical("/about/") }],
+    robots: path === "/sitemap/" ? { index: false, follow: true } : undefined,
     alternates: { canonical: canonical(page.path) },
     openGraph: { title: page.title, description: page.description, url: canonical(page.path), type: "website" },
   };
@@ -411,12 +411,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DynamicPage({ params }: Props) {
   const { slug } = await params;
-  const page = getPage(pathFromSlug(slug));
+  const path = pathFromSlug(slug);
+  const page = getPage(path);
   if (!page) notFound();
+  const redirectTarget = consolidatedRedirects[path];
+  if (redirectTarget) return <ConsolidatedRedirectPage from={path} to={redirectTarget} />;
   if (page.path === "/contact/") return <ContactPage page={page} />;
   if (page.path === "/sitemap/") return <HtmlSitemapPage page={page} />;
   if (page.path === "/paypal-vs-wise/") return <PayPalVsWisePage page={page} />;
-  const isUtility = page.path.includes("calculator") || page.path.includes("fees");
+  const showCalculator = calculatorPaths.has(page.path);
   const isCorePage = corePaths.has(page.path);
   const isSupportPage = supportPaths.has(page.path);
   const breadcrumbItems = breadcrumbsForPage(page);
@@ -436,8 +439,18 @@ export default async function DynamicPage({ params }: Props) {
               <ReviewByline />
               {isCorePage ? <HeroTrustRow ariaLabel={`${page.title} trust signals`} /> : null}
               {isSupportPage ? <SupportTrustRow path={page.path} title={page.title} /> : null}
+              {!showCalculator && (page.path.includes("paypal") || page.path.startsWith("/paypal-fees/")) ? (
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link href="/" className="inline-flex items-center gap-2 rounded border border-mint bg-mint px-4 py-2.5 text-sm font-semibold text-white no-underline transition hover:bg-ink">
+                    Open the calculator <ArrowRight size={16} aria-hidden="true" />
+                  </Link>
+                  <Link href="/methodology/" className="inline-flex items-center gap-2 rounded border border-line bg-white px-4 py-2.5 text-sm font-semibold text-mint no-underline transition hover:border-mint">
+                    Review methodology
+                  </Link>
+                </div>
+              ) : null}
             </div>
-            {isUtility && <Calculator defaultMode={page.calculatorMode ?? "receiving"} compact={!page.path.includes("calculator")} {...calculatorDefaults} />}
+            {showCalculator ? <Calculator defaultMode={page.calculatorMode ?? "receiving"} {...calculatorDefaults} /> : null}
           </div>
         </section>
         <SeoArticle>
@@ -480,7 +493,7 @@ export default async function DynamicPage({ params }: Props) {
         name: page.title,
         description: page.description,
         url: `${siteUrl}${page.path}`,
-        dateModified: "2026-09-30",
+        dateModified: "2026-10-22",
         author: { "@type": "Organization", name: "FeeClarity Editorial Team at LaunchLab", url: `${siteUrl}/about/` },
         publisher: { "@type": "Organization", name: "LaunchLab", url: `${siteUrl}/about/` },
       }} />
@@ -496,6 +509,31 @@ export default async function DynamicPage({ params }: Props) {
           })),
         }} />
       ) : null}
+    </>
+  );
+}
+
+function ConsolidatedRedirectPage({ from, to }: { from: string; to: string }) {
+  const target = getPage(to);
+  const destination = canonical(to);
+
+  return (
+    <>
+      <meta httpEquiv="refresh" content={`0;url=${destination}`} />
+      <main className="mx-auto grid min-h-[55vh] max-w-3xl place-content-center gap-4 px-4 py-16 text-center">
+        <p className="text-sm font-semibold uppercase tracking-wide text-mint">Page consolidated</p>
+        <h1 className="text-4xl font-bold text-ink">This content has moved</h1>
+        <p className="text-lg leading-8 text-muted">
+          FeeClarity combined this page with a more complete calculator or guide to reduce repetition and keep one authoritative destination.
+        </p>
+        <p className="text-sm text-muted">Previous path: {from}</p>
+        <div>
+          <Link href={to} className="inline-flex items-center gap-2 rounded border border-mint bg-mint px-4 py-2.5 text-sm font-semibold text-white no-underline">
+            Continue to {target?.title ?? "the updated page"} <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+      </main>
+      <script dangerouslySetInnerHTML={{ __html: `window.location.replace(${JSON.stringify(destination)});` }} />
     </>
   );
 }
@@ -568,26 +606,16 @@ function HtmlSitemapPage({ page }: { page: NonNullable<ReturnType<typeof getPage
     {
       title: "Calculators",
       paths: [
-        "/paypal-fee-calculator/",
         "/paypal-reverse-fee-calculator/",
         "/paypal-international-fee-calculator/",
         "/paypal-currency-conversion-calculator/",
-        "/paypal-invoice-fee-calculator/",
-        "/paypal-goods-and-services-fee-calculator/",
-        "/paypal-merchant-fee-calculator/",
       ],
     },
     {
       title: "PayPal fee guides",
       paths: [
         "/paypal-fees/",
-        "/paypal-international-fees/",
-        "/how-much-does-paypal-charge/",
         "/how-to-calculate-paypal-fees/",
-        "/paypal-currency-conversion-fees/",
-        "/paypal-fees-for-freelancers/",
-        "/paypal-fees-for-business/",
-        "/paypal-fees-for-invoices/",
       ],
     },
     {
@@ -1236,6 +1264,7 @@ function FeesGuideLowerContent() {
       <OnThisPage links={[
         { href: "#current-paypal-fees", label: "Current PayPal fees" },
         { href: "#transaction-details", label: "Transaction details" },
+        { href: "#payment-use-cases", label: "Payment use cases" },
         { href: "#fee-components", label: "Fee components" },
         { href: "#source-transparency", label: "Source transparency" },
         { href: "#faq--paypal-fees-", label: "Frequently Asked Questions" },
@@ -1253,6 +1282,27 @@ function FeesGuideLowerContent() {
           ))}
         </ul>
         <p className="mt-4 text-base leading-7 text-muted">PayPal pricing can vary across these fields, so one-rate answers can be misleading.</p>
+      </section>
+      <section id="payment-use-cases" className="not-prose">
+        <SectionHeading title="Choose the workflow that matches the payment">
+          FeeClarity keeps one authoritative calculator for general estimates and focused tools only where the calculation itself changes.
+        </SectionHeading>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {[
+            ["Invoice or freelance quote", "Start with the net amount you need and solve backward for the gross invoice total.", "/paypal-reverse-fee-calculator/", "Open reverse calculator"],
+            ["Goods and Services sale", "Use the main calculator and select the actual commercial payment type instead of treating a personal payment as a substitute.", "/", "Open main calculator"],
+            ["International client or customer", "Separate the recipient-market processing rule, international adjustment, and any currency conversion.", "/paypal-international-fee-calculator/", "Open international calculator"],
+            ["Business transaction planning", "Test representative order sizes and compare the percentage, fixed fee, international status, and settlement currency.", "/", "Run business scenarios"],
+          ].map(([title, description, href, cta]) => (
+            <section key={title} className="rounded-lg border border-line bg-white p-5">
+              <h3 className="text-xl font-semibold text-ink">{title}</h3>
+              <p className="mt-3 text-base leading-7 text-muted">{description}</p>
+              <Link href={href} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-mint no-underline">
+                {cta} <ArrowRight size={15} aria-hidden="true" />
+              </Link>
+            </section>
+          ))}
+        </div>
       </section>
       <ImportantNote title="Use estimates carefully">
         FeeClarity separates processing costs from currency-conversion estimates and links calculations to source-backed assumptions. Confirm the final fee inside PayPal before committing to pricing, invoicing, or reimbursement terms.
@@ -1441,7 +1491,7 @@ function PayPalVsWisePage({ page }: { page: NonNullable<ReturnType<typeof getPag
                 ))}
               </ol>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/paypal-fee-calculator/" className="inline-flex items-center gap-1 rounded border border-line bg-white px-4 py-2 text-sm font-semibold text-mint">Run PayPal estimate <ArrowRight size={15} aria-hidden="true" /></Link>
+                <Link href="/" className="inline-flex items-center gap-1 rounded border border-line bg-white px-4 py-2 text-sm font-semibold text-mint">Run PayPal estimate <ArrowRight size={15} aria-hidden="true" /></Link>
                 <Link href="/paypal-currency-conversion-calculator/" className="inline-flex items-center gap-1 rounded border border-line bg-white px-4 py-2 text-sm font-semibold text-mint">Check conversion estimate <ArrowRight size={15} aria-hidden="true" /></Link>
               </div>
             </section>
@@ -1472,7 +1522,7 @@ function PayPalVsWisePage({ page }: { page: NonNullable<ReturnType<typeof getPag
               <h2 id="related-heading" className="text-3xl font-bold leading-tight text-ink">Related tools</h2>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {[
-                  ["/paypal-fee-calculator/", "PayPal Fee Calculator"],
+                  ["/", "PayPal Fee Calculator"],
                   ["/paypal-reverse-fee-calculator/", "Reverse PayPal Fee Calculator"],
                   ["/paypal-international-fee-calculator/", "International PayPal Fee Calculator"],
                   ["/paypal-currency-conversion-calculator/", "Currency Conversion Calculator"],

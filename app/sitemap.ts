@@ -6,7 +6,7 @@ export const dynamic = "force-static";
 export default function sitemap(): MetadataRoute.Sitemap {
   return pages.map((path) => ({
     url: `${siteUrl}${path}`,
-    lastModified: new Date("2026-09-30"),
+    lastModified: new Date("2026-10-22"),
     changeFrequency: path.includes("calculator") || path === "/" ? "weekly" : "monthly",
     priority: path === "/" ? 1 : path.includes("calculator") ? 0.9 : 0.7,
   }));

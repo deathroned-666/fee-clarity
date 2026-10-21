@@ -15,7 +15,7 @@ const guideCards = [
   {
     title: "How much will PayPal take?",
     description: "PayPal fees depend on the payment amount, transaction type, country, currency, and whether the payment is domestic or international.",
-    href: "/how-much-does-paypal-charge/",
+    href: "/paypal-fees/",
     cta: "Calculate PayPal fees",
     icon: ReceiptText,
   },
@@ -36,7 +36,7 @@ const guideCards = [
   {
     title: "Currency conversion fees",
     description: "Currency conversion is separate from the processing fee and may include a spread in PayPal's exchange rate.",
-    href: "/paypal-currency-conversion-fees/",
+    href: "/paypal-currency-conversion-calculator/",
     cta: "Learn about conversion fees",
     icon: RefreshCw,
   },
@@ -88,7 +88,7 @@ const audienceCards = [
   {
     title: "Online sellers",
     description: "See how processing and fixed fees may affect the amount left from a customer payment.",
-    href: "/paypal-goods-and-services-fee-calculator/",
+    href: "/",
     cta: "Estimate a sale",
     icon: ReceiptText,
   },
@@ -102,7 +102,7 @@ const audienceCards = [
   {
     title: "Anyone checking a payment route",
     description: "Compare the amount sent with the amount received using visible assumptions and source details.",
-    href: "/paypal-fee-calculator/",
+    href: "/",
     cta: "Open the calculator",
     icon: CalculatorIcon,
   },

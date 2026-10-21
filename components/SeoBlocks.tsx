@@ -19,7 +19,7 @@ export function PageHero({ title, description, calculatorMode }: { title: string
             <p className="mt-4 max-w-[720px] text-lg leading-8 text-muted md:text-xl md:leading-8">{description}</p>
             <p className="mt-4 text-sm leading-6 text-muted">
               Reviewed by <Link href="/about/" className="font-semibold text-mint">FeeClarity Editorial Team at LaunchLab</Link>
-              {" · "}Content reviewed September 30, 2026
+              {" · "}Content reviewed October 22, 2026
             </p>
             <HeroTrustRow ariaLabel="Calculator trust signals" />
           </div>
